@@ -12,9 +12,9 @@ int* readInteger() {
     int* num;
     size_t size = 2, count = 0; //tamanho default e contagem para array
 
-    num = (int*) malloc(sizeof(int) * size); // aloca memória ao num de tamanho *num (int) vezes size (2)
+    num = malloc(sizeof(int) * size); // aloca memória ao num de tamanho *num (int) vezes size (2)
 
-    while (EOF != (num[count] = fgetc(file)) && num[count++] != '\n') {
+    while (EOF != (num[count] = fgetc(file)) && num[count] != '\n') {
         /*  EOF != (num[count] = fgetc(stdin))
             lê o número fgetc(stdin) e o coloca
             dentro da array num[count], depois
@@ -29,10 +29,12 @@ int* readInteger() {
                 limite da array, se sim realoca
                 mais espaço para ser utilizado:*/
 
-            num = (int*) realloc(num, sizeof(int) * (size += 1));
+            num = realloc(num, sizeof(int) * (size += 1));
             /*  size+=1 incrementa size e depois faz a
                 operação.*/
         }
+
+        count++;
     }
     // se a condição do while é falsa, num[count] = '\n' ou EOF.
 
@@ -48,9 +50,9 @@ char* readChar() {
     char* num;
     size_t size = 2, count = 0; //tamanho default e contagem para array
 
-    num = (char*) malloc(sizeof(char) * size); // aloca memória ao num de tamanho *num (int) vezes size (2)
+    num = malloc(sizeof(char) * size); // aloca memória ao num de tamanho *num (int) vezes size (2)
 
-    while (EOF != (num[count] = fgetc(stdin)) && num[count++] != '\n') {
+    while (EOF != (num[count] = fgetc(stdin)) && num[count] != '\n') {
         /*  EOF != (num[count] = fgetc(stdin))
             lê o número fgetc(stdin) e o coloca
             dentro da array num[count], depois
@@ -65,10 +67,12 @@ char* readChar() {
                 limite da array, se sim realoca
                 mais espaço para ser utilizado:*/
 
-            num = (char*) realloc(num, sizeof(char) * (size += 1));
+            num = realloc(num, sizeof(char) * (size += 1));
             /*  size+=1 incrementa size e depois faz a
                 operação.*/
         }
+
+        count++;
     }
 
     // se a condição do while é falsa, num[count] = '\n' ou EOF.
