@@ -1,6 +1,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// THIS IS BEING RECREATED AT KONWERTER_1.c !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+
+
+
+
+
+
+
+
+
+
+
 char* entrada(FILE* read, size_t tam2) {
     char* str;
     size_t tam = 0;
