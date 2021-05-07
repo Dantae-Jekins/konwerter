@@ -7,7 +7,7 @@
 
 //FUNÇÕES DE LEITURA
 
-int* readInteger() {
+int readInteger() {
     FILE* file = stdin;
     int* num;
     size_t size = 2, count = 0; //tamanho default e contagem para array
@@ -46,7 +46,7 @@ int* readInteger() {
     //retorna um ponteiro apontando para um vetor de inteiros.
 }
 
-char* readChar() {
+char readChar() {
     char* num;
     size_t size = 2, count = 0; //tamanho default e contagem para array
 
