@@ -47,12 +47,13 @@ int readInteger() {
 }
 
 char readChar() {
+    FILE* file = stdin;
     char* num;
     size_t size = 2, count = 0; //tamanho default e contagem para array
 
     num = malloc(sizeof(char) * size); // aloca memória ao num de tamanho *num (int) vezes size (2)
 
-    while (EOF != (num[count] = fgetc(stdin)) && num[count] != '\n') {
+    while (EOF != (num[count] = fgetc(file)) && num[count] != '\n') {
         /*  EOF != (num[count] = fgetc(stdin))
             lê o número fgetc(stdin) e o coloca
             dentro da array num[count], depois
@@ -78,7 +79,7 @@ char readChar() {
     // se a condição do while é falsa, num[count] = '\n' ou EOF.
 
     // portanto deve ser retornado, com tamanho [count]:    
-    num[count+1] = '\0';
+    num[count] = '\0';
     return num;
 
     // retorna um ponteiro apontando para um vetor de caracteres.
@@ -105,12 +106,12 @@ void main() {
     printf("\n\n Conversor hex/dec/oct/bin\n --------------------------------------------");
     printf("\n\n Por favor informe a base do valor de entrada: \n [0]-Hexa  [1]-Deci  [2]-Octa  [3]-Bin \n ");
 
-    scanf_s("%d", &base);
-    while (base != 0 && base != 1 && base != 2 && base != 3)
-    {
-        printf("\n Este número não corresponde a uma base, insira um correto");
+    do {
         scanf_s("%d", &base);
-    }
+        if(base != 0 && base != 1 && base != 2 && base != 3)
+            printf("\n Este número não corresponde a uma base, insira um correto");
+
+    } while (base != 0 && base != 1 && base != 2 && base != 3);
     // O scanf_s anterior consegue alterar a próxima leitura, isso quebra as funções readChar e readInteger.
     // para isso existe uma função com o único objetivo de limpar o leitor
     clearinput();
@@ -122,6 +123,17 @@ void main() {
 
         printf(" Hexadecimal\n Insira o valor: ");
         hex = readChar();
+
+        if(hex==NULL){
+            printf("ERRO HEX==NULL");
+            break;
+        }
+
+        printf("\n hex : ");
+        for (size_t i = 0; hex[i] != '\0'; i++)
+            printf("%c", hex[i]);
+        
+
         break;
 
     case 1:
@@ -129,57 +141,50 @@ void main() {
         printf(" Decimal\n Insira o valor: ");
         dec = readInteger();
 
+        if(dec==NULL){
+            printf("ERRO DEC==NULL");
+            break;
+        }
+
+        printf("\n dec : ");
+        for (size_t i = 0; dec[i] != -1; i++)
+            printf("%d", dec[i] - '0');
+        
+
         break;
 
     case 2:
 
         printf(" Octal\n Insira o valor: ");
         oct = readInteger();
+        if(oct==NULL){
+            printf("ERRO OCT==NULL");
+            break;
+        }
+
+        printf("\n oct : ");
+        for (size_t i = 0; oct[i] != -1; i++)
+            printf("%d", oct[i] - '0');
+        
         break;
 
     case 3:
 
         printf(" Binário\n Insira o valor: ");
         bin = readInteger();
+        
+        if(bin==NULL){
+            printf("ERRO BIN==NULL");
+            break;
+        }
+
+        printf("\n bin : ");
+        for (size_t i = 0; bin[i] != -1; i++)
+            printf("%d",bin[i]-'0');
+
         break;
 
     default:
-        printf(" ERRO");
-    }
-
-    printf("\n\n Teste.");
-
-    if (hex != NULL) {
-        printf("\n hex : ");
-        for (size_t i = 0; hex[i] != '\n'; i++)
-        {
-            printf("%c", hex[i]);
-        }
-    }
-       
-    // os fors procuram o digito de parada descrito na função de leitura, que é "-1".
-    // A função getc retorna valores ASCII, e as funções de print printam inteiros, o "- '0' " serve para tornar carácteres ASCII em inteiros.
-
-
-    if (dec != NULL) {
-        printf("\n dec : ");
-        for (size_t i = 0; dec[i] != -1; i++)
-        {
-            printf("%d", dec[i] - '0');
-        }
-    }
-    if (oct != NULL) {
-        printf("\n oct : ");
-        for (size_t i = 0; oct[i] != -1; i++)
-        {
-            printf("%d", oct[i] - '0');
-        }
-    }
-    if (bin != NULL) {
-        printf("\n bin : ");
-        for (size_t i = 0; bin[i] != -1; i++)
-        {
-            printf("%d", bin[i] - '0');
-        }
+        printf(" ERRO CASE=()");
     }
 }
