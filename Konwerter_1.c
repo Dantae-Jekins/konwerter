@@ -87,6 +87,64 @@ char readChar() {
 
 //FUNÇÕES DE CONVERSÃO
 
+int decBin(int flag, int *input) {
+
+    if (flag == 0) {
+        //flag = 0 ; dec -> bin
+    }
+    else if (flag == 1) {
+        //flag = 1 ; bin -> dec
+    }
+    else {
+        printf("ERROR, função binOct FLAG INVÁLIDA");
+    }
+}
+
+int decOct(int flag, int *input) {
+
+    if (flag == 0) {
+        //flag = 0 ; dec -> oct
+    }
+    else if (flag == 1) {
+        //flag = 1 ; oct -> dec
+    }
+    else {
+        printf("ERROR, função binOct FLAG INVÁLIDA");
+    }
+}
+
+int binOct(int flag, int *input) {
+
+    int* carry;
+
+    if (flag == 0) {
+        //flag = 0 ; bin -> oct
+        carry = decBin(1, input);
+        return decOct(0, carry);
+    }
+    else if(flag == 1){
+        //flag = 1 ; oct -> bin
+        carry = decOct(1, input);
+        return decBin(0, carry);
+    }
+    else {
+        printf("ERROR, função binOct FLAG INVÁLIDA");
+    }
+
+}
+
+
+// hexadecimais tem que receber um tratamento especial :I
+int hexInput(char *input, int b) {
+    //deve retornar um tipo int
+}
+char hexOutput(int *input, int b) {
+    //deve retornar um tipo char
+
+
+}
+
+
 
 
 //FUNÇÕES MATEMÁTICAS
