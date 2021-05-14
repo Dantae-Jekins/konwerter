@@ -7,7 +7,7 @@
 
 //FUNÇÕES DE LEITURA
 
-int readInteger() {
+int *readInteger() {
     FILE* file = stdin;
     int* num;
     size_t size = 2, count = 0; //tamanho default e contagem para array
@@ -46,7 +46,7 @@ int readInteger() {
     //retorna um ponteiro apontando para um vetor de inteiros.
 }
 
-char readChar() {
+char *readChar() {
     FILE* file = stdin;
     char* num;
     size_t size = 2, count = 0; //tamanho default e contagem para array
@@ -87,7 +87,9 @@ char readChar() {
 
 //FUNÇÕES DE CONVERSÃO
 
-int decBin(int flag, int *input) {
+int *decBin(int flag, int input[]) {
+
+    int *output;
 
     if (flag == 0) {
         //flag = 0 ; dec -> bin
@@ -98,12 +100,17 @@ int decBin(int flag, int *input) {
     else {
         printf("ERROR, função binOct FLAG INVÁLIDA");
     }
+
+    return output;
 }
 
-int decOct(int flag, int *input) {
+int *decOct(int flag, int input[]) {
+
+    int *output;
 
     if (flag == 0) {
         //flag = 0 ; dec -> oct
+
     }
     else if (flag == 1) {
         //flag = 1 ; oct -> dec
@@ -111,20 +118,20 @@ int decOct(int flag, int *input) {
     else {
         printf("ERROR, função binOct FLAG INVÁLIDA");
     }
+
+    return output;
 }
 
-int binOct(int flag, int *input) {
-
-    int* carry;
+int *binOct(int flag, int input[]) {
 
     if (flag == 0) {
         //flag = 0 ; bin -> oct
-        carry = decBin(1, input);
+        int *carry = decBin(1, input);
         return decOct(0, carry);
     }
     else if(flag == 1){
         //flag = 1 ; oct -> bin
-        carry = decOct(1, input);
+        int *carry = decOct(1, input);
         return decBin(0, carry);
     }
     else {
@@ -135,12 +142,11 @@ int binOct(int flag, int *input) {
 
 
 // hexadecimais tem que receber um tratamento especial :I
-int hexInput(char *input, int b) {
+int hexInput(char input, int b) {
     //deve retornar um tipo int
 }
-char hexOutput(int *input, int b) {
+char hexOutput(int input, int b) {
     //deve retornar um tipo char
-
 
 }
 
@@ -157,7 +163,7 @@ void clearinput(void) {
 // main
 
 void main() {
-    int base=NULL;
+    int base;
     int *bin=NULL, *oct=NULL, *dec=NULL;
     char *hex=NULL;
 
@@ -165,7 +171,7 @@ void main() {
     printf("\n\n Por favor informe a base do valor de entrada: \n [0]-Hexa  [1]-Deci  [2]-Octa  [3]-Bin \n ");
 
     do {
-        scanf_s("%d", &base);
+        scanf("%d", &base);
         if(base != 0 && base != 1 && base != 2 && base != 3)
             printf("\n Este número não corresponde a uma base, insira um correto");
 
@@ -245,4 +251,6 @@ void main() {
     default:
         printf(" ERRO CASE=()");
     }
+
+    printf("\n\n");
 }
