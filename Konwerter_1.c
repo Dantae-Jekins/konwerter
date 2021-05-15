@@ -4,7 +4,7 @@
 
 //  Declaração das funções (para o compilador não assumir errado);
 //  Suponho que funcionaria se eu colocasse as funções antes de main também.
-
+//  eu tõ exagerando nos comentários para eu mesmo montar o programa
 //FUNÇÕES DE LEITURA
 
 int *readInteger() {
@@ -87,12 +87,48 @@ char *readChar() {
 
 //FUNÇÕES DE CONVERSÃO
 
-int *decBin(int flag, int *input) {
+int *decBin(int flag, int input[]) {
 
     int *output;
+    int size = 1;
+    //!primeiro extrair o número em si da array absorvida em input reversamente:
+
+    //achar o tamanho da array
+    //primeira tentativa foi utilizar sizeof(array), porem o compilador não compreende esta função com ponteiros,
+    //por isso é necessário achar o tamanho através de uma contagem até -1, que é a ordem de parada
+    //por causa da ordem de parada é necessário que size conte 1 a mais, para que represente o tamanho real
+    while(input[size-1]!=-1)
+    size++;
+    /*  então arranjar a array em reverso (-1 deve permanecer no final visto que é a ordem de parada)
+    não é possível criar uma array de carry que saiba o tamanho do input sem ser um ponteiro com malloc.*/
+    int *carry = malloc(sizeof(int)*size);
+    //então podemos extrair o reverso
+    //dados imaginários para exemplificar e me ajudar a pensar
+    //input = {0, 1, 2, 3, 4, -1} > {4, 3, 2, 1, 0, -1} ; size = 5, não pode contar o -1
+    for( int i = size-1, j = 0; i>0; i--, j++) // i = 5, vai contar até que i = 1, então um total de 5 vezes 
+        //i tem que ser size-1, razão:
+            /*
+            size representa o tamanho total da array, mas ele conta a partir de 1, diferentemente do computador
+                não se pode mudar porque para alocar tamanho para o carry através de size ELE PRECISA SER ASSIM, já que sizeof(0)
+                é um valor nulo, e seria necessário partir do sizeof(1).
+                Por isso que para usar size na array, ele deve ser subtraido por 1, já que size=6 é a mesma coisa que
+                array[0,1,2,3,4,5,6];
+
+            */
+        //passa array[4,3,2,1,0] para carry[0,1,2,3,4]
+        carry[j] = input[i-1];
+        //Input tem que ser i-1 porque o último elemento de input(-1) não deve ser transferido.
+
+    carry[size-1]=-1; // adiciona ordem de parada em carry :I..
+
+    //TESTE
+    printf("\n input invertido: ");
+    for (int i = 0; carry[i]!=-1; i++)
+        printf("%d", carry[i]);
 
     if (flag == 0) {    //!------------------------------------------------------------------------------------------
         //flag = 0 ; dec -> bin
+        
     }
     else if (flag == 1) {   //!------------------------------------------------------------------------------------------
         //flag = 1 ; bin -> dec
@@ -107,25 +143,45 @@ int *decBin(int flag, int *input) {
 int *decOct(int flag, int *input) {
 
     int *output;
+    int size = 1;
+    //!primeiro extrair o número em si da array absorvida em input reversamente:
+
+    //achar o tamanho da array
+    //primeira tentativa foi utilizar sizeof(array), porem o compilador não compreende esta função com ponteiros,
+    //por isso é necessário achar o tamanho através de uma contagem até -1, que é a ordem de parada
+    //por causa da ordem de parada é necessário que size conte 1 a mais, para que represente o tamanho real
+    while(input[size-1]!=-1)
+    size++;
+    /*  então arranjar a array em reverso (-1 deve permanecer no final visto que é a ordem de parada)
+    não é possível criar uma array de carry que saiba o tamanho do input sem ser um ponteiro com malloc.*/
+    int *carry = malloc(sizeof(int)*size);
+    //então podemos extrair o reverso
+    //dados imaginários para exemplificar e me ajudar a pensar
+    //input = {0, 1, 2, 3, 4, -1} > {4, 3, 2, 1, 0, -1} ; size = 5, não pode contar o -1
+    for( int i = size-1, j = 0; i>0; i--, j++) // i = 5, vai contar até que i = 1, então um total de 5 vezes 
+        //i tem que ser size-1, razão:
+            /*
+            size representa o tamanho total da array, mas ele conta a partir de 1, diferentemente do computador
+                não se pode mudar porque para alocar tamanho para o carry através de size ELE PRECISA SER ASSIM, já que sizeof(0)
+                é um valor nulo, e seria necessário partir do sizeof(1).
+                Por isso que para usar size na array, ele deve ser subtraido por 1, já que size=6 é a mesma coisa que
+                array[0,1,2,3,4,5,6];
+
+            */
+        //passa array[4,3,2,1,0] para carry[0,1,2,3,4]
+        carry[j] = input[i-1];
+        //Input tem que ser i-1 porque o último elemento de input(-1) não deve ser transferido.
+
+    carry[size-1]=-1; // adiciona ordem de parada em carry :I..
+
+    //TESTE
+    printf("\n input invertido: ");
+    for (int i = 0; carry[i]!=-1; i++)
+        printf("%d", carry[i]);
 
     if (flag == 0) {        //!------------------------------------------------------------------------------------------
         //flag = 0 ; dec -> oct
-        //!primeiro extrair o número em si da array absorvida em input:
-
-        //achar o tamanho da array
-        int size = sizeof(input)/sizeof(int); // eu tive problema com isso, porque que eu usando sizeof(endereço) funciona??
-
-        /*  então arranjar a array em reverso (-1 deve permanecer no final visto que é a ordem de parada)
-        não é possível criar uma array de carry que saiba o tamanho do input sem ser um ponteiro com malloc.*/
-        int *carry = malloc(sizeof(input));
-        //então podemos extrair o reverso
-
-        //dados imaginários para exemplificar e me ajudar a pensar
-        //input = {0, 1, 2, 3, 4, -1} > {4, 3, 2, 1, 0, -1} ; size = 5, não pode contar o -1
-        for( int i = size, j = 0; i>0; i--, j++){ // i = 5, vai contar até que i = 1, então um total de 5 vezes 
-            //passa array[4,3,2,1,0] para carry[0,1,2,3,4]
-            carry[j] = input[i-1];
-        }
+    
     }
     else if (flag == 1) {   //!------------------------------------------------------------------------------------------
         //flag = 1 ; oct -> dec
@@ -233,18 +289,17 @@ void main() {
             printf("ERRO DEC==NULL");
             break;
         }        
+        //printa e transforma o valor decimal de ASCII para inteiros
+        printf("\n dec : ");
+        for (size_t i = 0; dec[i] != -1; i++)
+            printf("%d", dec[i]-='0');
         
         //converte em hexadecimal
 
         //converte em binário
-
+        bin = decBin(0, dec);
         //converte em octal
-
-        //printa o valor em decimal
-        printf("\n dec : ");
-        for (size_t i = 0; dec[i] != -1; i++)
-            printf("%d", dec[i] - '0');
-        
+        oct = decOct(0, dec);
 
         break;
 
@@ -258,18 +313,19 @@ void main() {
             printf("ERRO OCT==NULL");
             break;
         }
+        //printa e transforma o valor octal de ASCII para inteiros
+        printf("\n oct : ");
+        for (size_t i = 0; oct[i] != -1; i++)
+            printf("%d", oct[i]-='0');
 
         //converte em hexadecimal
 
         //converte em binário
+        //bin = binOct(1, oct);
 
         //converte em decimal
+        dec = decOct(1, oct);
 
-        //printa o valor em octal
-        printf("\n oct : ");
-        for (size_t i = 0; oct[i] != -1; i++)
-            printf("%d", oct[i] - '0');
-        
         break;
 
     case 3:
@@ -282,17 +338,18 @@ void main() {
             printf("ERRO BIN==NULL");
             break;
         }
+        //printa e transforma o valor binário de ASCII para inteiros
+        printf("\n bin : ");
+        for (size_t i = 0; bin[i] != -1; i++)
+            printf("%d",bin[i]-='0');
 
         //converte em hexadecimal
 
         //converte em decimal
-
+        dec = decBin(1, bin);
+        
         //converte em octal
-
-        //printa o valor em binário
-        printf("\n bin : ");
-        for (size_t i = 0; bin[i] != -1; i++)
-            printf("%d",bin[i]-'0');
+        //oct = binOct(0, bin);
 
         break;
 
