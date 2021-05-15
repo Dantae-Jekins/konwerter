@@ -15,10 +15,6 @@ And finally, you're not supposed to understand what's in here, if you do, either
 - main function numeric system caller
 - input reader for char/int arrays with dynamic memory allocation  
 
-## To fix
-
-- realloc(num, sizeof(*num)*count) returning wrong values ;
-
 ## To do
 
 The examples listed should not be functional, and syntax may be wrong, i mean, it's just an idea grouping.

@@ -87,14 +87,14 @@ char *readChar() {
 
 //FUNÇÕES DE CONVERSÃO
 
-int *decBin(int flag, int input[]) {
+int *decBin(int flag, int *input) {
 
     int *output;
 
-    if (flag == 0) {
+    if (flag == 0) {    //!------------------------------------------------------------------------------------------
         //flag = 0 ; dec -> bin
     }
-    else if (flag == 1) {
+    else if (flag == 1) {   //!------------------------------------------------------------------------------------------
         //flag = 1 ; bin -> dec
     }
     else {
@@ -104,15 +104,30 @@ int *decBin(int flag, int input[]) {
     return output;
 }
 
-int *decOct(int flag, int input[]) {
+int *decOct(int flag, int *input) {
 
     int *output;
 
-    if (flag == 0) {
+    if (flag == 0) {        //!------------------------------------------------------------------------------------------
         //flag = 0 ; dec -> oct
+        //!primeiro extrair o número em si da array absorvida em input:
 
+        //achar o tamanho da array
+        int size = sizeof(input)/sizeof(int); // eu tive problema com isso, porque que eu usando sizeof(endereço) funciona??
+
+        /*  então arranjar a array em reverso (-1 deve permanecer no final visto que é a ordem de parada)
+        não é possível criar uma array de carry que saiba o tamanho do input sem ser um ponteiro com malloc.*/
+        int *carry = malloc(sizeof(input));
+        //então podemos extrair o reverso
+
+        //dados imaginários para exemplificar e me ajudar a pensar
+        //input = {0, 1, 2, 3, 4, -1} > {4, 3, 2, 1, 0, -1} ; size = 5, não pode contar o -1
+        for( int i = size, j = 0; i>0; i--, j++){ // i = 5, vai contar até que i = 1, então um total de 5 vezes 
+            //passa array[4,3,2,1,0] para carry[0,1,2,3,4]
+            carry[j] = input[i-1];
+        }
     }
-    else if (flag == 1) {
+    else if (flag == 1) {   //!------------------------------------------------------------------------------------------
         //flag = 1 ; oct -> dec
     }
     else {
@@ -122,14 +137,14 @@ int *decOct(int flag, int input[]) {
     return output;
 }
 
-int *binOct(int flag, int input[]) {
+int *binOct(int flag, int *input) { 
 
-    if (flag == 0) {
+    if (flag == 0) {        //!------------------------------------------------------------------------------------------
         //flag = 0 ; bin -> oct
         int *carry = decBin(1, input);
         return decOct(0, carry);
     }
-    else if(flag == 1){
+    else if(flag == 1){     //!------------------------------------------------------------------------------------------
         //flag = 1 ; oct -> bin
         int *carry = decOct(1, input);
         return decBin(0, carry);
@@ -186,13 +201,21 @@ void main() {
     case 0:
 
         printf(" Hexadecimal\n Insira o valor: ");
-        hex = readChar();
 
+        //lê em hexa
+        hex = readChar();
         if(hex==NULL){
             printf("ERRO HEX==NULL");
             break;
         }
 
+        //converte em decimal
+
+        //converte em binário
+
+        //converte em octal
+
+        //printa o valor em hexadecimal
         printf("\n hex : ");
         for (size_t i = 0; hex[i] != '\0'; i++)
             printf("%c", hex[i]);
@@ -203,13 +226,21 @@ void main() {
     case 1:
 
         printf(" Decimal\n Insira o valor: ");
-        dec = readInteger();
 
+        //Lê em decimal
+        dec = readInteger();
         if(dec==NULL){
             printf("ERRO DEC==NULL");
             break;
-        }
+        }        
+        
+        //converte em hexadecimal
 
+        //converte em binário
+
+        //converte em octal
+
+        //printa o valor em decimal
         printf("\n dec : ");
         for (size_t i = 0; dec[i] != -1; i++)
             printf("%d", dec[i] - '0');
@@ -220,12 +251,21 @@ void main() {
     case 2:
 
         printf(" Octal\n Insira o valor: ");
+
+        //lê em octal
         oct = readInteger();
         if(oct==NULL){
             printf("ERRO OCT==NULL");
             break;
         }
 
+        //converte em hexadecimal
+
+        //converte em binário
+
+        //converte em decimal
+
+        //printa o valor em octal
         printf("\n oct : ");
         for (size_t i = 0; oct[i] != -1; i++)
             printf("%d", oct[i] - '0');
@@ -235,13 +275,21 @@ void main() {
     case 3:
 
         printf(" Binário\n Insira o valor: ");
-        bin = readInteger();
         
+        //lê em binário
+        bin = readInteger();
         if(bin==NULL){
             printf("ERRO BIN==NULL");
             break;
         }
 
+        //converte em hexadecimal
+
+        //converte em decimal
+
+        //converte em octal
+
+        //printa o valor em binário
         printf("\n bin : ");
         for (size_t i = 0; bin[i] != -1; i++)
             printf("%d",bin[i]-'0');
