@@ -99,39 +99,28 @@ int *decBin(int flag, int input[]) {
     //por causa da ordem de parada é necessário que size conte 1 a mais, para que represente o tamanho real
     while(input[size-1]!=-1)
     size++;
-    /*  então arranjar a array em reverso (-1 deve permanecer no final visto que é a ordem de parada)
-    não é possível criar uma array de carry que saiba o tamanho do input sem ser um ponteiro com malloc.*/
-    int *carry = malloc(sizeof(int)*size);
-    //então podemos extrair o reverso
-    //dados imaginários para exemplificar e me ajudar a pensar
-    //input = {0, 1, 2, 3, 4, -1} > {4, 3, 2, 1, 0, -1} ; size = 5, não pode contar o -1
-    for( int i = size-1, j = 0; i>0; i--, j++) // i = 5, vai contar até que i = 1, então um total de 5 vezes 
-        //i tem que ser size-1, razão:
-            /*
-            size representa o tamanho total da array, mas ele conta a partir de 1, diferentemente do computador
-                não se pode mudar porque para alocar tamanho para o carry através de size ELE PRECISA SER ASSIM, já que sizeof(0)
-                é um valor nulo, e seria necessário partir do sizeof(1).
-                Por isso que para usar size na array, ele deve ser subtraido por 1, já que size=6 é a mesma coisa que
-                array[0,1,2,3,4,5,6];
 
-            */
-        //passa array[4,3,2,1,0] para carry[0,1,2,3,4]
-        carry[j] = input[i-1];
-        //Input tem que ser i-1 porque o último elemento de input(-1) não deve ser transferido.
-
-    carry[size-1]=-1; // adiciona ordem de parada em carry :I..
-
-    //TESTE
-    printf("\n input invertido: ");
-    for (int i = 0; carry[i]!=-1; i++)
-        printf("%d", carry[i]);
-
-    if (flag == 0) {    //!------------------------------------------------------------------------------------------
+    if (flag == 0) { 
         //flag = 0 ; dec -> bin
+
+        //
         
     }
-    else if (flag == 1) {   //!------------------------------------------------------------------------------------------
+    else if (flag == 1) { 
         //flag = 1 ; bin -> dec
+
+        // aloca um espaço para um ponteiro chamado de carry
+        int *carry = malloc(sizeof(int)*size);
+        //então podemos extrair o reverso de input, que será utilizado para extrair o valor em decimal
+
+        for( int i = size-1, j = 0; i>0; i--, j++)
+
+            //passa array[4,3,2,1,0] para carry[0,1,2,3,4]
+            carry[j] = input[i-1];
+            //Input tem que ser i-1 porque o último elemento de input(-1) não deve ser transferido.
+
+        carry[size-1]=-1; // adiciona ordem de parada em carry :I..
+
     }
     else {
         printf("ERROR, função binOct FLAG INVÁLIDA");
@@ -144,47 +133,20 @@ int *decOct(int flag, int *input) {
 
     int *output;
     int size = 1;
-    //!primeiro extrair o número em si da array absorvida em input reversamente:
 
-    //achar o tamanho da array
-    //primeira tentativa foi utilizar sizeof(array), porem o compilador não compreende esta função com ponteiros,
-    //por isso é necessário achar o tamanho através de uma contagem até -1, que é a ordem de parada
-    //por causa da ordem de parada é necessário que size conte 1 a mais, para que represente o tamanho real
     while(input[size-1]!=-1)
-    size++;
-    /*  então arranjar a array em reverso (-1 deve permanecer no final visto que é a ordem de parada)
-    não é possível criar uma array de carry que saiba o tamanho do input sem ser um ponteiro com malloc.*/
-    int *carry = malloc(sizeof(int)*size);
-    //então podemos extrair o reverso
-    //dados imaginários para exemplificar e me ajudar a pensar
-    //input = {0, 1, 2, 3, 4, -1} > {4, 3, 2, 1, 0, -1} ; size = 5, não pode contar o -1
-    for( int i = size-1, j = 0; i>0; i--, j++) // i = 5, vai contar até que i = 1, então um total de 5 vezes 
-        //i tem que ser size-1, razão:
-            /*
-            size representa o tamanho total da array, mas ele conta a partir de 1, diferentemente do computador
-                não se pode mudar porque para alocar tamanho para o carry através de size ELE PRECISA SER ASSIM, já que sizeof(0)
-                é um valor nulo, e seria necessário partir do sizeof(1).
-                Por isso que para usar size na array, ele deve ser subtraido por 1, já que size=6 é a mesma coisa que
-                array[0,1,2,3,4,5,6];
+        size++;
 
-            */
-        //passa array[4,3,2,1,0] para carry[0,1,2,3,4]
-        carry[j] = input[i-1];
-        //Input tem que ser i-1 porque o último elemento de input(-1) não deve ser transferido.
-
-    carry[size-1]=-1; // adiciona ordem de parada em carry :I..
-
-    //TESTE
-    printf("\n input invertido: ");
-    for (int i = 0; carry[i]!=-1; i++)
-        printf("%d", carry[i]);
-
-    if (flag == 0) {        //!------------------------------------------------------------------------------------------
+    if (flag == 0) {      
         //flag = 0 ; dec -> oct
     
     }
-    else if (flag == 1) {   //!------------------------------------------------------------------------------------------
+    else if (flag == 1) { 
         //flag = 1 ; oct -> dec
+        int *carry = malloc(sizeof(int)*size);
+        for( int i = size-1, j = 0; i>0; i--, j++)
+            carry[j] = input[i-1];
+        carry[size-1]=-1;    
     }
     else {
         printf("ERROR, função binOct FLAG INVÁLIDA");
@@ -195,12 +157,12 @@ int *decOct(int flag, int *input) {
 
 int *binOct(int flag, int *input) { 
 
-    if (flag == 0) {        //!------------------------------------------------------------------------------------------
+    if (flag == 0) {
         //flag = 0 ; bin -> oct
         int *carry = decBin(1, input);
         return decOct(0, carry);
     }
-    else if(flag == 1){     //!------------------------------------------------------------------------------------------
+    else if(flag == 1){
         //flag = 1 ; oct -> bin
         int *carry = decOct(1, input);
         return decBin(0, carry);
@@ -225,6 +187,13 @@ char hexOutput(int input, int b) {
 
 
 //FUNÇÕES MATEMÁTICAS
+
+int arraySum(int array[], int size){
+    int sum = 0;
+    for (size_t i = 1, j = size; j > 0; i*=10, j--, size--)
+        sum += array[j-1]*i; 
+    return sum;
+}
 
 //clear input
 void clearinput(void) {
