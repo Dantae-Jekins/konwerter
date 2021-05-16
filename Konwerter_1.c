@@ -95,10 +95,59 @@ char *readChar()
 int arraySum(int *array, int size)
 {
     int sum = 0;
-    for (size_t i = 1, j = size-1; j > 0; i *= 10, j--, size--) 
-        //j deve ser carregado com size-1, pois senão ele conta a ordem de parada (-1)
+    for (size_t i = 1, j = size; j > 0; i *= 10, j--, size--) 
         sum += array[j - 1] * i;
     return sum;
+}
+
+int podniesc(int num, int i)
+{
+    //função de potênciação
+
+    if(i == 0)
+        return 1;
+    
+    else if (i == 1)
+        return num;
+    
+    else if (i>1)
+    {
+        int carry = num;
+        while (i > 1 )
+        {
+            num*=carry;
+            i--;
+        }
+        return num;
+    }
+
+    /*else if (i<0) SÓ COM FLOATS, EU ODEIO FLOATS
+    {
+
+        while (i < 1 )
+        {
+            num*=num;
+            i++;
+        }        
+        num= 1/num; 
+        return num;
+    }
+    */
+}
+
+int korzen()
+{
+
+}
+
+int lg(int base, int num)
+{
+    // esta operação retorna quantas casas um número decimal tem, não é exatamente um logarítmo, pois senão 
+    // teria de aceitar floats e causaria muitos outros problemas neste algorítmo
+    int i;
+    for (i = 1; num > base; i++)
+        num/=base;
+    return i;
 }
 
 //FUNÇÕES DE CONVERSÃO
@@ -107,23 +156,21 @@ int *decBin(int flag, int input[])
 {
 
     int *output;
-    int size = 1;
-    int dec;
+    int size = 0;
+    int dec = 0;
     int sys = 2;
-    //!primeiro extrair o número em si da array absorvida em input reversamente:
-
-    //achar o tamanho da array
-    //primeira tentativa foi utilizar sizeof(array), porem o compilador não compreende esta função com ponteiros,
-    //por isso é necessário achar o tamanho através de uma contagem até -1, que é a ordem de parada
-    //por causa da ordem de parada é necessário que size conte 1 a mais, para que represente o tamanho real
-    while (input[size - 1] != -1)
+    
+    //extrair o tamanho da array importada na função, até -1, excluindo-o.
+    while (input[size] != -1)
         size++;
 
     if (flag == 0)
     {
         //flag = 0 ; dec -> bin
         //primeiro nós devemos extrair o inteiro total da array, da seguinte forma:
-        dec = arraySum(input, size);
+        dec = arraySum(input, size); 
+        //size precisa ser +1, pois arraySum conta a partir de 1
+        // enquanto size começou a contar a partir de 
         size = 0;
         //com  o número inteiro, nós somos capazes de realizar a matemática para extrair o valor em binário :)
         int carry = dec;
@@ -142,26 +189,37 @@ int *decBin(int flag, int input[])
             output[size] = carry % sys;
             carry /= sys;
         }
+
+        //FEITO
     }
     else if (flag == 1)
     {
         //flag = 1 ; bin -> dec
 
-        // aloca um espaço para um ponteiro chamado de carry
-        int *carry = malloc(sizeof(int) * size);
-        //então podemos extrair o reverso de input, que será utilizado para extrair o valor em decimal
+        //extraimos os valores da função abaixo, inversamente 
+        for (int i = size-1, j = 0; i>=0; i--, j++)
+            dec += input[i] * podniesc(sys, j);
+            //podniesc é a função de potência
 
-        for (int i = size - 1, j = 0; i > 0; i--, j++)
+        // infelizmente estamos trabalhando com array's, por isto não é possível devolver dec como inteiro, para isso
+        // devemos transferir ele em uma array, usaremos o logarítmo de 10 para achar seu tamanho, com o intúito de
+        // saber qual tamanho devemos alocar para a array que irá absorver o elemento, e por final realizar
+        // operações para colocar cada elemento em seu devido lugar.
 
-            //passa array[4,3,2,1,0] para carry[0,1,2,3,4]
-            carry[j] = input[i - 1];
-        //Input tem que ser i-1 porque o último elemento de input(-1) não deve ser transferido.
+        size = lg(10, dec);  //descobrimos o tamanho do decimal gerado
+        output = malloc(sizeof(int)*size+1); //alocamos o espaço que outpur deve ter
+        output[size]=-1; //ordem de parada
+        //e então  absorvemos o decimal em output.
+        //output[size] é a ordem de parada, portanto podemos começar a contar só a partir de size-1.
+        for (int i = size-1; i >= 0; i--, dec/=10)
+            output[i] = dec%10;
 
-        carry[size - 1] = -1; // adiciona ordem de parada em carry :I..
+        
+
     }
     else
     {
-        printf("ERROR, função binOct FLAG INVÁLIDA");
+        printf("ERROR, função decBin FLAG INVÁLIDA");
     }
 
     return output;
@@ -169,24 +227,23 @@ int *decBin(int flag, int input[])
 
 int *decOct(int flag, int *input)
 {
+
     int *output;
-    int size = 1;
+    int size = 0;
     int dec;
     int sys = 8;
-    //!primeiro extrair o número em si da array absorvida em input reversamente:
-
-    //achar o tamanho da array
-    //primeira tentativa foi utilizar sizeof(array), porem o compilador não compreende esta função com ponteiros,
-    //por isso é necessário achar o tamanho através de uma contagem até -1, que é a ordem de parada
-    //por causa da ordem de parada é necessário que size conte 1 a mais, para que represente o tamanho real
-    while (input[size - 1] != -1)
+    
+    //extrair o tamanho da array importada na função, até -1, excluindo-o.
+    while (input[size] != -1)
         size++;
 
     if (flag == 0)
     {
         //flag = 0 ; dec -> bin
         //primeiro nós devemos extrair o inteiro total da array, da seguinte forma:
-        dec = arraySum(input, size);
+        dec = arraySum(input, size); 
+        //size precisa ser +1, pois arraySum conta a partir de 1
+        // enquanto size começou a contar a partir de 
         size = 0;
         //com  o número inteiro, nós somos capazes de realizar a matemática para extrair o valor em binário :)
         int carry = dec;
@@ -205,18 +262,37 @@ int *decOct(int flag, int *input)
             output[size] = carry % sys;
             carry /= sys;
         }
+
+        //FEITO
     }
     else if (flag == 1)
     {
-        //flag = 1 ; oct -> dec
-        int *carry = malloc(sizeof(int) * size);
-        for (int i = size - 1, j = 0; i > 0; i--, j++)
-            carry[j] = input[i - 1];
-        carry[size - 1] = -1;
+        //flag = 1 ; bin -> dec
+
+        //extraimos os valores da função abaixo, inversamente 
+        for (int i = size-1, j = 0; i>=0; i--, j++)
+            dec += input[i] * podniesc(sys, j);
+            //podniesc é a função de potência
+
+        // infelizmente estamos trabalhando com array's, por isto não é possível devolver dec como inteiro, para isso
+        // devemos transferir ele em uma array, usaremos o logarítmo de 10 para achar seu tamanho, com o intúito de
+        // saber qual tamanho devemos alocar para a array que irá absorver o elemento, e por final realizar
+        // operações para colocar cada elemento em seu devido lugar.
+
+        size = lg(10, dec);  //descobrimos o tamanho do decimal gerado
+        output = malloc(sizeof(int)*size+1); //alocamos o espaço que outpur deve ter
+        output[size]=-1; //ordem de parada
+        //e então  absorvemos o decimal em output.
+        //output[size] é a ordem de parada, portanto podemos começar a contar só a partir de size-1.
+        for (int i = size-1; i >= 0; i--, dec/=10)
+            output[i] = dec%10;
+
+        
+
     }
     else
     {
-        printf("ERROR, função binOct FLAG INVÁLIDA");
+        printf("ERROR, função decOct FLAG INVÁLIDA");
     }
 
     return output;
@@ -327,6 +403,7 @@ void main()
             printf("%d", dec[i] -= '0');
 
         //converte em hexadecimal
+        printf("\n hex : ainda não desenvolvido");
 
         //converte em binário
         bin = decBin(0, dec);
@@ -357,15 +434,22 @@ void main()
         //printa e transforma o valor octal de ASCII para inteiros
         printf("\n oct : ");
         for (size_t i = 0; oct[i] != -1; i++)
-            printf("%d", oct[i] -= '0');
+            printf("%d", oct[i]-='0');
 
         //converte em hexadecimal
+        printf("\n hex : ainda não desenvolvido");
 
         //converte em binário
-        //bin = binOct(1, oct);
+        bin = binOct(1, oct);
+        printf("\n bin : ");
+        for (size_t i = 0; bin[i] != -1; i++)
+            printf("%d", bin[i]);
 
         //converte em decimal
         dec = decOct(1, oct);
+        printf("\n dec : ");
+        for (size_t i = 0; dec[i] != -1; i++)
+            printf("%d", dec[i]);        
 
         break;
 
@@ -383,15 +467,22 @@ void main()
         //printa e transforma o valor binário de ASCII para inteiros
         printf("\n bin : ");
         for (size_t i = 0; bin[i] != -1; i++)
-            printf("%d", bin[i] -= '0');
+            printf("%d", bin[i]-='0');
 
         //converte em hexadecimal
+        printf("\n hex : ainda não desenvolvido");
 
         //converte em decimal
         dec = decBin(1, bin);
+        printf("\n dec : ");
+        for (size_t i = 0; dec[i] != -1; i++)
+            printf("%d", dec[i]);
 
         //converte em octal
-        //oct = binOct(0, bin);
+        oct = binOct(0, bin);
+        printf("\n oct : ");
+        for (size_t i = 0; oct[i] != -1; i++)
+            printf("%d", oct[i]);
 
         break;
 
