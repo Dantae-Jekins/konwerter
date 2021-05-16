@@ -156,13 +156,31 @@ int *decBin(int flag, int input[])
 {
 
     int *output;
-    int size = 0;
+    int size = 0;    
+    int wait = 0;
     int dec = 0;
     int sys = 2;
     
     //extrair o tamanho da array importada na função, até -1, excluindo-o.
+    // wait serve para que size não conte os 0's iniciais.
+
+    while(input[wait]==0)
+        wait++;
     while (input[size] != -1)
         size++;
+    size -= wait;
+
+    // se existem 0's iniciais, temos que retirar eles e realocar um espaço correto para output
+    if(wait > 0)
+    {
+        int *carry;
+        carry = malloc(sizeof(int)*size);
+        for (size_t i = 0, j = wait; i<size ; i++, j++)
+        {
+            carry[i] = input[j];
+        }
+        input = carry;
+    }
 
     if (flag == 0)
     {
@@ -229,13 +247,31 @@ int *decOct(int flag, int *input)
 {
 
     int *output;
-    int size = 0;
-    int dec;
+    int size = 0;    
+    int wait = 0;
+    int dec = 0;
     int sys = 8;
     
     //extrair o tamanho da array importada na função, até -1, excluindo-o.
+    // wait serve para que size não conte os 0's iniciais.
+
+    while(input[wait]==0)
+        wait++;
     while (input[size] != -1)
         size++;
+    size -= wait;
+
+    // se existem 0's iniciais, temos que retirar eles e realocar um espaço correto para output
+    if(wait > 0)
+    {
+        int *carry;
+        carry = malloc(sizeof(int)*size);
+        for (size_t i = 0, j = wait; i<size ; i++, j++)
+        {
+            carry[i] = input[j];
+        }
+        input = carry;
+    }
 
     if (flag == 0)
     {
@@ -458,8 +494,8 @@ void main()
         printf(" Binário\n Insira o valor: ");
 
         //lê em binário
-        bin = readInteger();
-        if (bin == NULL)
+        oct = readInteger();
+        if (oct == NULL)
         {
             printf("ERRO BIN==NULL");
             break;
