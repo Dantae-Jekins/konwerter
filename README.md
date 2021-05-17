@@ -13,11 +13,12 @@ Oh yeah and i don't know polish but i love it, im trying to fix it on my head by
 - input reader for char/int arrays with dynamic memory allocation 
 - dec <=> bin <=> oct konwertery
 - terminal printers
+- mixed octal and binary konwerters, planning on integrating the hexadecimal when it's done too
 
 ## To do
 
 - Finish hexadecimal konwertery
-- Mix the binary and octal konwertery (they have basically the same code with a single integer value difference)
+
 - Set the program so it can work in other repositories, along with it's mathematical functions
 
     current mathematical functions:
@@ -26,7 +27,7 @@ Oh yeah and i don't know polish but i love it, im trying to fix it on my head by
     - korzen (blank)
     - lg 
 
-- Give the capability of returning other types on values to Konwerter, like single integers instead of an array of integers
+- Give the capability of returning and taking other types other than arrays to Konwerter
 
 - And finally remove the comments from the code and actually pull off some effort to make a decent README explaining what each function does.
 
