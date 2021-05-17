@@ -152,105 +152,17 @@ int lg(int base, int num)
 
 //FUNÇÕES DE CONVERSÃO
 
-int *decBin(int flag, int input[])
+int *decKonwerter(int flag, int sys, int *input)
 {
 
     int *output;
     int size = 0;    
     int wait = 0;
     int dec = 0;
-    int sys = 2;
-    
-    //extrair o tamanho da array importada na função, até -1, excluindo-o.
-    // wait serve para que size não conte os 0's iniciais.
 
-    while(input[wait]==0)
-        wait++;
-    while (input[size] != -1)
-        size++;
-    size -= wait;
-
-    // se existem 0's iniciais, temos que retirar eles e realocar um espaço correto para output
-    if(wait > 0)
-    {
-        int *carry;
-        carry = malloc(sizeof(int)*size);
-        for (size_t i = 0, j = wait; i<size ; i++, j++)
-        {
-            carry[i] = input[j];
-        }
-        input = carry;
+    if( sys < 0 || sys > 9){
+        printf("Base inválida");
     }
-
-    if (flag == 0)
-    {
-        //flag = 0 ; dec -> bin
-        //primeiro nós devemos extrair o inteiro total da array, da seguinte forma:
-        dec = arraySum(input, size); 
-        //size precisa ser +1, pois arraySum conta a partir de 1
-        // enquanto size começou a contar a partir de 
-        size = 0;
-        //com  o número inteiro, nós somos capazes de realizar a matemática para extrair o valor em binário :)
-        int carry = dec;
-        while (carry >= sys)
-        {
-            //primeiramente deve-se achar o tamanho que output terá
-            carry /= sys;
-            size++;
-        }
-        //após ter conhecimento disso alocamos um espaço
-        output = malloc(sizeof(int) * (size + 1));
-        output[size+1]=-1;//ordem de parada
-        //e então adicionamos os valores para output reversamente, ou seja, os restos das divisões.
-        for (carry = dec; size >= 0; size--)
-        {
-            output[size] = carry % sys;
-            carry /= sys;
-        }
-
-        //FEITO
-    }
-    else if (flag == 1)
-    {
-        //flag = 1 ; bin -> dec
-
-        //extraimos os valores da função abaixo, inversamente 
-        for (int i = size-1, j = 0; i>=0; i--, j++)
-            dec += input[i] * podniesc(sys, j);
-            //podniesc é a função de potência
-
-        // infelizmente estamos trabalhando com array's, por isto não é possível devolver dec como inteiro, para isso
-        // devemos transferir ele em uma array, usaremos o logarítmo de 10 para achar seu tamanho, com o intúito de
-        // saber qual tamanho devemos alocar para a array que irá absorver o elemento, e por final realizar
-        // operações para colocar cada elemento em seu devido lugar.
-
-        size = lg(10, dec);  //descobrimos o tamanho do decimal gerado
-        output = malloc(sizeof(int)*size+1); //alocamos o espaço que outpur deve ter
-        output[size]=-1; //ordem de parada
-        //e então  absorvemos o decimal em output.
-        //output[size] é a ordem de parada, portanto podemos começar a contar só a partir de size-1.
-        for (int i = size-1; i >= 0; i--, dec/=10)
-            output[i] = dec%10;
-
-        
-
-    }
-    else
-    {
-        printf("ERROR, função decBin FLAG INVÁLIDA");
-    }
-
-    return output;
-}
-
-int *decOct(int flag, int *input)
-{
-
-    int *output;
-    int size = 0;    
-    int wait = 0;
-    int dec = 0;
-    int sys = 8;
     
     //extrair o tamanho da array importada na função, até -1, excluindo-o.
     // wait serve para que size não conte os 0's iniciais.
@@ -340,14 +252,14 @@ int *binOct(int flag, int *input)
     if (flag == 0)
     {
         //flag = 0 ; bin -> oct
-        int *carry = decBin(1, input);
-        return decOct(0, carry);
+        int *carry = decKonwerter(1, 2, input);
+        return decKonwerter(0, 8, carry);;
     }
     else if (flag == 1)
     {
         //flag = 1 ; oct -> bin
-        int *carry = decOct(1, input);
-        return decBin(0, carry);
+        int *carry = decKonwerter(1, 8, input);;
+        return decKonwerter(0, 2, input);;
     }
     else
     {
@@ -442,13 +354,13 @@ void main()
         printf("\n hex : ainda não desenvolvido");
 
         //converte em binário
-        bin = decBin(0, dec);
+        bin = decKonwerter(0, 2, dec);
         printf("\n bin : ");
         for (size_t i = 0; bin[i] != -1; i++)
             printf("%d", bin[i]);
 
         //converte em octal
-        oct = decOct(0, dec);
+        oct = decKonwerter(0, 8, dec);
         printf("\n oct : ");
         for (size_t i = 0; oct[i] != -1; i++)
             printf("%d", oct[i]);
@@ -482,7 +394,7 @@ void main()
             printf("%d", bin[i]);
 
         //converte em decimal
-        dec = decOct(1, oct);
+        dec = decKonwerter(1, 8, oct);
         printf("\n dec : ");
         for (size_t i = 0; dec[i] != -1; i++)
             printf("%d", dec[i]);        
@@ -494,8 +406,8 @@ void main()
         printf(" Binário\n Insira o valor: ");
 
         //lê em binário
-        oct = readInteger();
-        if (oct == NULL)
+        bin = readInteger();
+        if (bin == NULL)
         {
             printf("ERRO BIN==NULL");
             break;
@@ -509,7 +421,7 @@ void main()
         printf("\n hex : ainda não desenvolvido");
 
         //converte em decimal
-        dec = decBin(1, bin);
+        dec = decKonwerter(1, 2, bin);
         printf("\n dec : ");
         for (size_t i = 0; dec[i] != -1; i++)
             printf("%d", dec[i]);
