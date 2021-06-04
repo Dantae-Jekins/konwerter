@@ -140,10 +140,10 @@ int *integerValue(int flag, int *input)
     {
         for (size_t i = 0; input[i] != -1; i++)
         {
-            if (input[i] >= 0 || input[i] <= 9)
-                input[i] += 58;
+            if (input[i] >= 0 && input[i] <= 9)
+                input[i] += 48;
 
-            else if (input[i] >= 10 || input[i] <= 15)
+            else if (input[i] >= 10 && input[i] <= 15)
                 input[i] += 55;
         }
     }
@@ -157,14 +157,15 @@ int *decKonwerter(int flag, int sys, int *input)
     int *output;
     int size = 0;
     int dec = 0;
+    int hex = 0;
 
     //extrair o tamanho da array importada na função, até -1
     while (input[size] != -1)
         size++;
-
+    
     if (flag == 0)
     {
-        //flag = 0 ; dec -> bin
+        //flag = 0 ; dec -> sys
         //primeiro nós devemos extrair o inteiro total da array, da seguinte forma:
         dec = arraySum(input, size);
         size = 0;
@@ -177,7 +178,7 @@ int *decKonwerter(int flag, int sys, int *input)
             size++;
         }
         //após ter conhecimento disso alocamos um espaço
-        output = malloc(sizeof(int) * (size + 1));
+        output = malloc(sizeof(int) * (size + 2));
         output[size + 1] = -1; //ordem de parada
         //e então adicionamos os valores para output reversamente, ou seja, os restos das divisões.
         for (carry = dec; size >= 0; size--)
@@ -186,11 +187,14 @@ int *decKonwerter(int flag, int sys, int *input)
             carry /= sys;
         }
 
+        //faz com que seja retornado ASCII como valor
+        if(sys > 10)
+            output = integerValue(1, output);
         //FEITO
     }
     else if (flag == 1)
     {
-        //flag = 1 ; bin -> dec
+        //flag = 1 ; sys -> dec
 
         //extraimos os valores da função abaixo, inversamente
         for (int i = size - 1, j = 0; i >= 0; i--, j++)
@@ -287,13 +291,15 @@ void main()
             printf("ERRO DEC==NULL");
             break;
         }
-
         printf("\n dec : ");
         for (size_t i = 0; dec[i] != -1; i++)
             printf("%d", dec[i]);
 
         //converte em hexadecimal
-        printf("\n hex : ainda não desenvolvido");
+        hex = decKonwerter(0, 16, dec);
+        printf("\n hex : ");
+        for (size_t i = 0;hex[i]!=-1; i++)
+            printf("%c",hex[i]);
 
         //converte em binário
         bin = decKonwerter(0, 2, dec);
@@ -320,19 +326,21 @@ void main()
             printf("ERRO OCT==NULL");
             break;
         }
-        //printa e transforma o valor octal de ASCII para inteiros
         printf("\n oct : ");
         for (size_t i = 0; oct[i] != -1; i++)
             printf("%d", oct[i]);
-
-        //converte em hexadecimal
-        printf("\n hex : ainda não desenvolvido");
 
         //converte em decimal
         dec = decKonwerter(1, 8, oct);
         printf("\n dec : ");
         for (size_t i = 0; dec[i] != -1; i++)
             printf("%d", dec[i]);
+
+        //converte em hexadecimal
+        hex = decKonwerter(0, 16, dec);
+        printf("\n hex : ");
+        for (size_t i = 0;hex[i]!=-1; i++)
+            printf("%c",hex[i]);
 
         //converte em binário
         bin = decKonwerter(0, 2, dec);
@@ -353,19 +361,21 @@ void main()
             printf("ERRO BIN==NULL");
             break;
         }
-        //printa e transforma o valor binário de ASCII para inteiros
         printf("\n bin : ");
         for (size_t i = 0; bin[i] != -1; i++)
             printf("%d", bin[i]);
-
-        //converte em hexadecimal
-        printf("\n hex : ainda não desenvolvido");
 
         //converte em decimal
         dec = decKonwerter(1, 2, bin);
         printf("\n dec : ");
         for (size_t i = 0; dec[i] != -1; i++)
             printf("%d", dec[i]);
+
+        //converte em hexadecimal
+        hex = decKonwerter(0, 16, dec);
+        printf("\n hex : ");
+        for (size_t i = 0;hex[i]!=-1; i++)
+            printf("%c",hex[i]);
 
         //converte em octal
         oct = decKonwerter(0, 8, dec);
