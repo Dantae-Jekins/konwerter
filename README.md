@@ -1,33 +1,7 @@
 ### README.md
 # KONWERTER
 
-Konwerter_1.c is a newer one with the intent to be more readable and easier to fix.
+This is just me learning about c, and i'm going to redo it quite alot of times to test other kinds of stuff, mainly when i stop learning about Bash, python and other languages, this is just for people who might see this ( i mean none/1 dude ) and think i'm inactive due to git frequency (iM noT'111!!111!).
 
-I know i can change numeric systems easily with other libraries, but this is a training for me.
-
-Oh yeah and i don't know polish but i love it, im trying to fix it on my head by using it's translation but i'm having a hard time and may look like an absolute idiot, you can ignore the strange names :').
-
-## Done
-
-- main function numeric system caller
-- input reader for char/int arrays with dynamic memory allocation 
-- dec <=> bin <=> oct konwertery
-- terminal printers
-- mixed octal and binary konwerters, planning on integrating the hexadecimal when it's done too
-
-## To do
-
-- Finish hexadecimal konwertery
-
-- Set the program so it can work in other repositories, along with it's mathematical functions
-
-    current mathematical functions:
-
-    - podniesc
-    - korzen (blank)
-    - lg 
-
-- Give the capability of returning and taking other types other than arrays to Konwerter
-
-- And finally remove the comments from the code and actually pull off some effort to make a decent README explaining what each function does.
+Konwerter is just a really inefficient binary/hexadecimal/octal/decimal converter (which actually works1111111!!!!!!1!, im happy.) with useless dynamic memory allocation (i mean who the actual **** would spend their time making dynamic memory allocation in a program that consumes no RAM?!?!!?) which i only applied because i thought it was super cool (still is). Someone has asked me already and i got angry; no i didnt ****ing take the functions off sites, i've only gone through stack overflow to check how pointers and keyboard reading worked kekw..... (jeki's mad), and yeah i'm sort of a clown, good humoured type B'), and it feels strange writing this when no one's gonna read hehhe.
 
