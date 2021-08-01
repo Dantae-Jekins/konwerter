@@ -22,12 +22,51 @@ int *readInput()
       num = realloc(num, sizeof(int) * (size += 1));
 
     }
-
     count++;
   }
 
   num[count] = -1;
   return num;
+}
+
+void scanner(void *undefined, char flag[], FILE *file)
+{
+	
+	size_t size = 1, count = 0;
+
+	if(flag == "-file")
+	{	
+		printf("\n Flag not yet available");
+	}
+
+	else if(flag == "-int")
+	{
+		int *defined = undefined;
+		defined = malloc(sizeof(int)*size);
+		while   (EOF!=(defined[count] = fgetc(file)) && defined[count] != '\n')
+		{
+			if(defined[count])
+			{
+			}
+			count++;	
+        	if (count + 1 >= size)
+            	defined = realloc(defined, sizeof(int) * (size += 1));
+		}
+		defined[count] = -1;
+	}
+
+	else if(flag == "-char")
+	{	
+		char *defined = undefined;
+		defined = malloc(sizeof(char)*size);
+		while   (EOF!=(defined[count] = fgetc(file)) && defined[count] != '\n')
+		{
+			count++;
+			if (count + 1 >= size)
+				defined = realloc(defined, sizeof(char) * (size += 1));
+        }
+		defined[count] = -1;
+	}
 }
 
 int arraySum(int *array, int size)
