@@ -29,44 +29,67 @@ int *readInput()
   return num;
 }
 
-void scanner(void *undefined, char flag[], FILE *file)
+int cmpStr(char str1[], char str2[])
 {
-	
-	size_t size = 1, count = 0;
+  int x = 0;
+  for (int i = 0; str1[i] != '\0'; i++)
+  {
+    //printf("\nReading cmpstr; index: %d", i);
+    if (str1[i] != str2[i])
+    {
+      x = 1;
+      break;
+    }
+  }
+  return x;
+}
 
-	if(flag == "-file")
-	{	
-		printf("\n Flag not yet available");
-	}
+void *scanner(char flag[], FILE *file)
+{
+  if (cmpStr(flag, "-f") == 0)
+  {
+    char **output = NULL;
+    return output;
+    printf("\n Flag not yet available");
+  }
 
-	else if(flag == "-int")
-	{
-		int *defined = undefined;
-		defined = malloc(sizeof(int)*size);
-		while   (EOF!=(defined[count] = fgetc(file)) && defined[count] != '\n')
-		{
-			if(defined[count])
-			{
-			}
-			count++;	
-        	if (count + 1 >= size)
-            	defined = realloc(defined, sizeof(int) * (size += 1));
-		}
-		defined[count] = -1;
-	}
+  else if (cmpStr(flag, "-i") == 0)
+  {
+    char reader;
+    int *output = malloc(sizeof(int));
+    *output = 0; // goddanm initialize issues
 
-	else if(flag == "-char")
-	{	
-		char *defined = undefined;
-		defined = malloc(sizeof(char)*size);
-		while   (EOF!=(defined[count] = fgetc(file)) && defined[count] != '\n')
-		{
-			count++;
-			if (count + 1 >= size)
-				defined = realloc(defined, sizeof(char) * (size += 1));
-        }
-		defined[count] = -1;
-	}
+    while (EOF != (reader = fgetc(file)) && reader != '\n')
+    {
+      if (reader >= 48 && reader <= 57)
+        reader -= 48;
+      else
+        error(01);
+      *output *= 10;
+      *output += reader;
+    }
+    return output;
+  }
+
+  else if (cmpStr(flag, "-c") == 0)
+  {
+
+    char *output;
+    size_t size = 1, counter = 0;
+    output = malloc(sizeof(char) * size);
+
+    while (EOF != (output[counter] = fgetc(file)) && output[counter] != '\n')
+    {
+      counter++;
+
+      if (counter == size)
+        output = realloc(output, sizeof(char) * (size += 1));
+    }
+    output[counter] = '\0';
+    return output;
+  }
+
+  return NULL;
 }
 
 int arraySum(int *array, int size)
