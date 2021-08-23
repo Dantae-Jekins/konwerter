@@ -63,9 +63,9 @@ void *scanner(char flag[], FILE *file)
     {
       if (reader >= 48 && reader <= 57)
         reader -= 48;
-      else
-        error(01);
-      *output *= 10;
+      //else
+        //error(01); not ready yet
+      output *= 10;
       *output += reader;
     }
     return output;

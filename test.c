@@ -124,30 +124,66 @@ int *array(int integer, int size)
 
 void *konwerter(void *input, int insys, int outsys, char *flag)
 {
+
+	//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	// Modo especial? (sistemas acima de decimal, ou codificados)
 	if(flag == NULL)
 	{
-		if (insys <=10 && insys >=2)
+		
+		// Se não, checa se os sistemas realmente estão de acordo
+		if (insys <=10 && insys >=2 && outsys <= 10 && outsys >= 2)
 		{
-			int *carry = input;
-
-		if (insys != 10)
+			// Se sim, checa se o sys de entrada e o de saída são iguais
+			if (insys == outsys)
+			 return input;
+			
+			// Se são diferentes deve-se realizar as operações
+			else
 			{
-				//se o sistema for diferente de 10 devemos transformar
-				//o carry em decimal.
-				int size = lg(10, *carry); // descobre o tamanho do num
-				for(int i = 0; i > size; i++)
+				int *carry = input;
+				int decimal = 0;
+				// Checa se o sistema de entrada é 10
+				if (insys != 10)
 				{
-				 	printf("%d",i);	
-				}	
+					// Se não devemos transformar este em decimal
+					int size = lg(10, *carry);
+					int *integer = array(*carry, size);
+					for(int i = 1; i <= size; i++)
+					{
+						decimal += integer[size - i] * podniesc(insys, i-1);
+					}
+					free(integer);
+					// Se o sistema de saída é decimal
+					// basta retornar o decimal gerado
+					if (outsys == 10)
+						return &decimal;
+				}
+				// Se o sistema veio como decimal basta transferir ele.
+				else
+					decimal = *carry;
+
+				// Agora que temos o decimal basta transformar este
+				// na base desejada.
+				
+				int size = 0;
+				*carry = decimal;
+				while(carry >= outsys)
+				{
+					//mede o tamanho que deve ser a saída
+					carry /= sys;
+					size ++;
+				}
 			}
 		}
-		else if(insys == 16)
-		{
-			char *carry = input;
-		}
+		// Se estiver acima retorna NULL como erro.
 		else
 			return NULL;
 	}
+	
+	//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	// Se a flag estiver definida como especial, deve-se realizar
+	// as operações conforme ela determina, um README será criado
+	// para instruir sobre seu funcionamento.
 	else
 	{
 		return NULL;
@@ -156,12 +192,6 @@ void *konwerter(void *input, int insys, int outsys, char *flag)
 
 int main(int argc, char *argv[])
 {
-	int number = 234;
-	int size = lg(10, 234);
-	printf("\n size = %d",size);
-	int *carry = array(number, 3);
-	printf("\n array = %d %d %d", carry[0], carry[1], carry[2]);
-
 	// Array is working.
 }
 
