@@ -23,27 +23,33 @@ void *scanner(char flag[], FILE *file)
 {
     if(cmpStr(flag, "-f") == 0)
     {
-		char **output = NULL;
-		return output;
         printf("\n Flag not yet available");
+				return NULL;
     }
 
     else if(cmpStr(flag, "-i") == 0)
     {
 			char reader;
+			int halt = 1;
 			int *output = malloc(sizeof(int));
 			*output = 0; // goddanm initialize issues
 
         while   (EOF!=(reader = fgetc(file)) && reader != '\n')
         {
-          if ( reader >= 48 && reader <= 57 )
-          	reader -= 48;
-	    		else
-						error(1);
-	    	
-				*output*=10;
-	    	*output+=reader;
-        }
+					if (reader != '0' && halt != 0)
+						halt = 0; // ignore starting zeros.
+					
+					if (halt != 1)
+					{
+						if ( reader >= 48 && reader <= 57 )
+          		reader -= 48;
+	    			else
+							error(1);
+
+						*output*=10;
+	    			*output+=reader;
+					}
+				}
 
 			return output;
     }
@@ -54,18 +60,17 @@ void *scanner(char flag[], FILE *file)
 		int halt = 1;
 		char *output;
 		size_t counter= 0;
-		output = malloc(sizeof(char) * (counter + 1));
+		output = malloc(sizeof(char) * 1);
 		
 		while( EOF!=(output[counter]=fgetc(file)) && output[counter]!='\n')
 		{
-			if ( output[counter] != 0)
-				halt = 0;
+			if ( output[counter] != '0' && halt != 0)
+				halt = 0; //ignore starting zeros
+				//strings could actually take them, but i'll make a flag
+				//later on for this, currently it's mainly about reading hexa.
 
 			if( halt != 1)
-			{
-				counter++;
-				output = realloc(output, sizeof(char) * (counter += 1));
-			}
+				output = realloc(output, sizeof(char) * ((counter+=1)+1));
 		}
 
 		output[counter] = '\0';
@@ -78,6 +83,7 @@ void *scanner(char flag[], FILE *file)
 		return NULL;
 	}
 }
+
 int lg(int base, int num)
 {
 	int i;
@@ -141,7 +147,8 @@ void *konwerter(void *input, int insys, int outsys, char *flag)
 			else
 			{
 				int *carry = input;
-				int decimal = 0;
+				int *decimal = malloc(sizeof(int)*1); // musi byc wskaznik wracac
+				*decimal = 0;
 				// Checa se o sistema de entrada é 10
 				if (insys != 10)
 				{
@@ -150,29 +157,32 @@ void *konwerter(void *input, int insys, int outsys, char *flag)
 					int *integer = array(*carry, size);
 					for(int i = 1; i <= size; i++)
 					{
-						decimal += integer[size - i] * podniesc(insys, i-1);
+						*decimal += integer[size - i] * podniesc(insys, i-1);
 					}
 					free(integer);
 					// Se o sistema de saída é decimal
 					// basta retornar o decimal gerado
 					if (outsys == 10)
-						return &decimal;
+						return decimal;
 				}
 				// Se o sistema veio como decimal basta transferir ele.
 				else
-					decimal = *carry;
+					*decimal = *carry;
 
 				// Agora que temos o decimal basta transformar este
 				// na base desejada.
 				
-				int size = 0;
-				*carry = decimal;
-				while(carry >= outsys)
+				*carry = 0;
+				int module = 1;
+				while(*decimal >= outsys)
 				{
-					//mede o tamanho que deve ser a saída
-					carry /= sys;
-					size ++;
+					*carry += (*decimal%outsys)*module; // adere o módulo
+					*decimal/=outsys; 
+					module*=10;	//multiplica o próximo módulo por 10*+
 				}
+				
+				*carry +=*decimal*module; // último dígito.
+				return carry;
 			}
 		}
 		// Se estiver acima retorna NULL como erro.
@@ -192,6 +202,10 @@ void *konwerter(void *input, int insys, int outsys, char *flag)
 
 int main(int argc, char *argv[])
 {
-	// Array is working.
+	printf("\nInteiro: ");
+	int *inputi = scanner("-i", stdin);
+	konwerter(inputi, 2, 8, NULL);
+	printf("\n Octal: %d", *inputi);
+	
 }
 

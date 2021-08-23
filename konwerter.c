@@ -1,34 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
-
-
-
-int *readInput()
-{
-  FILE *file = stdin;
-  int *num;
-  size_t size = 2, count = 0;
-
-  num = malloc(sizeof(int) * size);
-
-  while (EOF != (num[count] = fgetc(file)) && num[count] != '\n')
-  {
-
-    if (count + 1 == size)
-    {
-
-      num = realloc(num, sizeof(int) * (size += 1));
-
-    }
-    count++;
-  }
-
-  num[count] = -1;
-  return num;
-}
-
+// Function to compare strings
 int cmpStr(char str1[], char str2[])
 {
   int x = 0;
@@ -44,67 +17,9 @@ int cmpStr(char str1[], char str2[])
   return x;
 }
 
-void *scanner(char flag[], FILE *file)
-{
-  if (cmpStr(flag, "-f") == 0)
-  {
-    char **output = NULL;
-    return output;
-    printf("\n Flag not yet available");
-  }
-
-  else if (cmpStr(flag, "-i") == 0)
-  {
-    char reader;
-    int *output = malloc(sizeof(int));
-    *output = 0; // goddanm initialize issues
-
-    while (EOF != (reader = fgetc(file)) && reader != '\n')
-    {
-      if (reader >= 48 && reader <= 57)
-        reader -= 48;
-      //else
-        //error(01); not ready yet
-      output *= 10;
-      *output += reader;
-    }
-    return output;
-  }
-
-  else if (cmpStr(flag, "-c") == 0)
-  {
-
-    char *output;
-    size_t size = 1, counter = 0;
-    output = malloc(sizeof(char) * size);
-
-    while (EOF != (output[counter] = fgetc(file)) && output[counter] != '\n')
-    {
-      counter++;
-
-      if (counter == size)
-        output = realloc(output, sizeof(char) * (size += 1));
-    }
-    output[counter] = '\0';
-    return output;
-  }
-
-  return NULL;
-}
-
-int arraySum(int *array, int size)
-{
-  int sum = 0;
-  for (size_t i = 1, j = size; j > 0; i *= 10, j--, size--)
-    sum += array[j - 1] * i;
-  
-  return sum;
-}
-
+// Função pra elevar o número
 int podniesc(int num, int i)
 {
-
-
   if (i == 0)
     return 1;
 
@@ -119,14 +34,15 @@ int podniesc(int num, int i)
       num *= carry;
       i--;
     }
-
     return num;
   }
+
+  return -1; // error
 }
 
+// Função logaritmica
 int lg(int base, int num)
 {
-
   int i;
   for (i = 1; num > base; i++)
     num /= base;
@@ -134,121 +50,164 @@ int lg(int base, int num)
   return i;
 }
 
-
-int *integerValue(int flag, int *input)
+// Function to transform a integer into an array
+int *array(int integer, int size)
 {
-
-  int wait = 0;
-  int size = 0;
-
-  while (input[wait] == 0)
-    wait++;
-
-  while (input[size] != -1)
-    size++;
-
-  size -= wait;
-
-  if (wait > 0)
+  int *carry = malloc(sizeof(int) * size);
+  while (size > 0)
   {
-    int *carry;
-    carry = malloc(sizeof(int) * size + 1);
-    for (size_t i = 0, j = wait; i <= size; i++, j++)
-      carry[i] = input[j];
-    
-    input = carry;
+    carry[size - 1] = integer % 10;
+    integer /= 10;
+    size--;
   }
 
-  if (flag == 0)
-  {
-
-    for (size_t i = 0; input[i] != -1; i++)
-    {
-      if (input[i] >= 48 && input[i] <= 57)
-        input[i] -= 48;                     
-
-      else if (input[i] >= 65 && input[i] <= 70)
-        input[i] -= 55;
-
-    }
-  }
- 
-  else if (flag == 1)
-  {
-    for (size_t i = 0; input[i] != -1; i++)
-    {
-      if (input[i] >= 0 && input[i] <= 9)
-        input[i] += 48;
-
-      else if (input[i] >= 10 && input[i] <= 15)
-        input[i] += 55;
-
-    }
-  }
-
-  return input;
+  return carry;
 }
 
-int *decKonwerter(int flag, int sys, int *input)
+// Função que serve para sinalizar erros no programa.
+int error(int code)
 {
+  printf("testing");
+}
 
-  int *output;
-  int size = 0;
-  int dec = 0;
-  int hex = 0;
-
-  while (input[size] != -1)
-    size++;
-
-  if (flag == 0)
+// Function to scan stdinput
+void *scanner(char flag[], FILE *file)
+{
+  if (cmpStr(flag, "-f") == 0)
   {
-
-    dec = arraySum(input, size);
-    size = 0;
-    int carry = dec;
-    while (carry >= sys)
-    {
-
-      carry /= sys;
-      size++;
-    }
-
-    output = malloc(sizeof(int) * (size + 2));
-    output[size + 1] = -1;
-    for (carry = dec; size >= 0; size--)
-    {
-      output[size] = carry % sys;
-      carry /= sys;
-    }
-
-    if (sys > 10)
-      output = integerValue(1, output);
-
+    printf("\n Flag not yet available");
+    return NULL;
   }
 
-  else if (flag == 1)
+  else if (cmpStr(flag, "-i") == 0)
+  {
+    char reader;
+    int halt = 1;
+    int *output = malloc(sizeof(int));
+    *output = 0; // goddanm initialize issues
+
+    while (EOF != (reader = fgetc(file)) && reader != '\n')
+    {
+      if (reader != '0' && halt != 0)
+        halt = 0; // ignore starting zeros.
+
+      if (halt != 1)
+      {
+        if (reader >= 48 && reader <= 57)
+          reader -= 48;
+        else
+          error(1);
+
+        *output *= 10;
+        *output += reader;
+      }
+    }
+
+    return output;
+  }
+
+  else if (cmpStr(flag, "-c") == 0)
   {
 
-    for (int i = size - 1, j = 0; i >= 0; i--, j++)
-      dec += input[i] * podniesc(sys, j);
+    int halt = 1;
+    char *output;
+    size_t counter = 0;
+    output = malloc(sizeof(char) * 1);
 
+    while (EOF != (output[counter] = fgetc(file)) && output[counter] != '\n')
+    {
+      if (output[counter] != '0' && halt != 0)
+        halt = 0; //ignore starting zeros
+                  //strings could actually take them, but i'll make a flag
+                  //later on for this, currently it's mainly about reading hexa.
 
+      if (halt != 1)
+        output = realloc(output, sizeof(char) * ((counter += 1) + 1));
+    }
 
-    size = lg(10, dec);                    
-    output = malloc(sizeof(int) * size + 1); 
-    output[size] = -1;                      
-    for (int i = size - 1; i >= 0; i--, dec /= 10)
-      output[i] = dec % 10;
-      
+    output[counter] = '\0';
+    return output;
   }
+
   else
   {
-    printf("ERROR, função decOct FLAG INVÁLIDA");
+    error(2);
+    return NULL;
   }
-
-  return output;
 }
 
+// Function to change numeric bases
+void *konwerter(void *input, int insys, int outsys, char *flag)
+{
+
+  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // Modo especial? (sistemas acima de decimal, ou codificados)
+  if (flag == NULL)
+  {
+
+    // Se não, checa se os sistemas realmente estão de acordo
+    if (insys <= 10 && insys >= 2 && outsys <= 10 && outsys >= 2)
+    {
+      // Se sim, checa se o sys de entrada e o de saída são iguais
+      if (insys == outsys)
+        return input;
+
+      // Se são diferentes deve-se realizar as operações
+      else
+      {
+        int *carry = input;
+        int *decimal = malloc(sizeof(int) * 1); // musi byc wskaznik wracac
+        *decimal = 0;
+        // Checa se o sistema de entrada é 10
+        if (insys != 10)
+        {
+          // Se não devemos transformar este em decimal
+          int size = lg(10, *carry);
+          int *integer = array(*carry, size);
+          for (int i = 1; i <= size; i++)
+          {
+            *decimal += integer[size - i] * podniesc(insys, i - 1);
+          }
+          free(integer);
+          // Se o sistema de saída é decimal
+          // basta retornar o decimal gerado
+          if (outsys == 10)
+            return decimal;
+        }
+        // Se o sistema veio como decimal basta transferir ele.
+        else
+          *decimal = *carry;
+
+        // Agora que temos o decimal basta transformar este
+        // na base desejada.
+
+        *carry = 0;
+        int module = 1;
+        while (*decimal >= outsys)
+        {
+          *carry += (*decimal % outsys) * module; // adere o módulo
+          *decimal /= outsys;
+          module *= 10; //multiplica o próximo módulo por 10*+
+        }
+
+        *carry += *decimal * module; // último dígito.
+        return carry;
+      }
+    }
+    // Se estiver acima retorna NULL como erro.
+    else
+      return NULL;
+  }
+
+  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // Se a flag estiver definida como especial, deve-se realizar
+  // as operações conforme ela determina, um README será criado
+  // para instruir sobre seu funcionamento.
+  else
+  {
+    return NULL;
+  }
+}
 
 void clearinput(void)
 {
@@ -257,170 +216,55 @@ void clearinput(void)
 }
 
 
-void main()
+int main(int argc, char *argv[])
 {
-  int base;
-  int *bin = NULL, *oct = NULL, *dec = NULL, *hex = NULL;
-
-  printf("\n\n Conversor hex/dec/oct/bin\n --------------------------------------------");
-  printf("\n\n Por favor informe a base do valor de entrada: \n [0]-Hexa  [1]-Deci  [2]-Octa  [3]-Bin \n ");
-
-  do
+  // no special commands
+  if (argc == 1)
   {
-    scanf("%d", &base);
-    if (base != 0 && base != 1 && base != 2 && base != 3)
-      printf("\n Este número não corresponde a uma base, insira um correto");
+    int osys; // i dont like declaring into 
+    int sys;  // a single line :)
+    int input;
 
-  } while (base != 0 && base != 1 && base != 2 && base != 3);
+    system("@cls||clear");
 
-  clearinput();
+    printf( "\n Konwerter program"
+            "\n This program only supports "
+            "\n values within 32-bit limit "
+            "\n (2147483647).\n"
+            "\n Hexadecimal's only available"
+            "\n in special flags mode, through"
+            "\n the terminal.\n");
 
-  printf("\n\n Base do valor de entrada selecionada: ");
+    printf( "\n------------------------------\n"
+            "\n Select the input numeric system:  ");      
+    scanf("%d", &sys);
+    
+    printf( " Select the output numeric system: ");
+    scanf("%d", &osys);
 
-  switch (base)
-  {
-  case 0:
-
-    printf(" Hexadecimal\n Insira o valor: ");
-
-    hex = readInput();
-    if (hex == NULL)
+    while(sys > 10 || sys < 2 || osys > 10 || sys < 2)
     {
-      printf("ERRO HEX==NULL");
-      break;
+      printf( "\n The only numeric systems available"
+              "\n without special flags are within 10"
+              "\n and 2, please select again:\n");
+      printf( "\n------------------------------\n"
+              "\n Select the input numeric system:  ");
+      scanf("%d", &sys);
+
+      printf(" Select the output numeric system: ");
+      scanf("%d", &osys);
     }
 
-    printf("\n hex : ");
-    for (size_t i = 0; hex[i] != -1; i++)
-      printf("%c", hex[i]);
+    printf( "\n The number to konwert:\n ");
+    scanf("%d", &input);
 
-    //converte em decimal
-    dec = decKonwerter(1, 16,hex=integerValue(0,hex));
-    printf("\n dec : ");
-    for (size_t i = 0; dec[i] != -1; i++)
-      printf("%d", dec[i]);
 
-    //converte em binário
-    bin = decKonwerter(0, 2, dec);
-    printf("\n bin : ");
-    for (size_t i = 0; bin[i] != -1; i++)
-      printf("%d", bin[i]);
+    konwerter(&input, sys, osys, NULL);
 
-    //converte em octal
-    oct = decKonwerter(0, 8, dec);
-    printf("\n oct : ");
-    for (size_t i = 0; oct[i] != -1; i++)
-      printf("%d", oct[i]);
-    break;
-
-  case 1:
-
-    printf(" Decimal\n Insira o valor: ");
-
-    //Lê em decimal
-    dec = integerValue(0, readInput());
-    if (dec == NULL)
-    {
-      printf("ERRO DEC==NULL");
-      break;
-    }
-    printf("\n dec : ");
-    for (size_t i = 0; dec[i] != -1; i++)
-      printf("%d", dec[i]);
-
-    //converte em hexadecimal
-    hex = decKonwerter(0, 16, dec);
-    printf("\n hex : ");
-    for (size_t i = 0; hex[i] != -1; i++)
-      printf("%c", hex[i]);
-
-    //converte em binário
-    bin = decKonwerter(0, 2, dec);
-    printf("\n bin : ");
-    for (size_t i = 0; bin[i] != -1; i++)
-      printf("%d", bin[i]);
-
-    //converte em octal
-    oct = decKonwerter(0, 8, dec);
-    printf("\n oct : ");
-    for (size_t i = 0; oct[i] != -1; i++)
-      printf("%d", oct[i]);
-
-    break;
-
-  case 2:
-
-    printf(" Octal\n Insira o valor: ");
-
-    //lê em octal
-    oct = integerValue(0, readInput());
-    if (oct == NULL)
-    {
-      printf("ERRO OCT==NULL");
-      break;
-    }
-    printf("\n oct : ");
-    for (size_t i = 0; oct[i] != -1; i++)
-      printf("%d", oct[i]);
-
-    //converte em decimal
-    dec = decKonwerter(1, 8, oct);
-    printf("\n dec : ");
-    for (size_t i = 0; dec[i] != -1; i++)
-      printf("%d", dec[i]);
-
-    //converte em hexadecimal
-    hex = decKonwerter(0, 16, dec);
-    printf("\n hex : ");
-    for (size_t i = 0; hex[i] != -1; i++)
-      printf("%c", hex[i]);
-
-    //converte em binário
-    bin = decKonwerter(0, 2, dec);
-    printf("\n bin : ");
-    for (size_t i = 0; bin[i] != -1; i++)
-      printf("%d", bin[i]);
-
-    break;
-
-  case 3:
-
-    printf(" Binário\n Insira o valor: ");
-
-    //lê em binário
-    bin = integerValue(0, readInput());
-    if (bin == NULL)
-    {
-      printf("ERRO BIN==NULL");
-      break;
-    }
-    printf("\n bin : ");
-    for (size_t i = 0; bin[i] != -1; i++)
-      printf("%d", bin[i]);
-
-    //converte em decimal
-    dec = decKonwerter(1, 2, bin);
-    printf("\n dec : ");
-    for (size_t i = 0; dec[i] != -1; i++)
-      printf("%d", dec[i]);
-
-    //converte em hexadecimal
-    hex = decKonwerter(0, 16, dec);
-    printf("\n hex : ");
-    for (size_t i = 0; hex[i] != -1; i++)
-      printf("%c", hex[i]);
-
-    //converte em octal
-    oct = decKonwerter(0, 8, dec);
-    printf("\n oct : ");
-    for (size_t i = 0; oct[i] != -1; i++)
-      printf("%d", oct[i]);
-
-    break;
-
-  default:
-    printf(" ERRO CASE=()");
+    printf(" \n Your number in base %d system: \n %d\n ", osys, input);
   }
-
-  printf("\n\n");
+  else
+  {
+    printf("Testin");
+  }
 }
