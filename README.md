@@ -27,22 +27,6 @@ Should also mention that test.c is only a code to test, prepare and solve code b
 <br>
 
 ---
-###  readInput
-  
->``` int *readInput() ```
-
-This method is **TEMPORARY**, and it reads through stdin (keyboard) while writing down it's output in an integer array, stdin outputs character values in ASCII format, **so i'm almost sure it's not a good practice to write it in a integer array**, but i guess it's not a big deal since i'm conscious of this, and it's bound to change.
-
-The reason of not using other methods such as **scanf()**, is because i wanted to make a memory-wise flexible variable, so instead of defining sizes myself i'd like to make the program figure them out by the use of malloc and realloc.
-
-* Technical info
-  - It returns a pointer to integer array filled with ASCII characters, outputs from stdin FILE.
-  - It's end-of-array term is set as **"-1"**, making it unable to read through negative numbers efficiently.
-
-
-<br>
-
----
 ### cmpStr
 
 >```int cmpStr(char str1[], char str2[]) ```
@@ -68,33 +52,8 @@ It should be able to read from files or keyboard inputs, in a way that it's poss
 <br>
 
 ---
-### integerValue
 
->```int *integerValue(int flag, int *input)```
-
-This method is used to transform the ASCII chars into integers to be used by decKonwerter, it shall no longer be used after scanner is ready, since it's use is particular to readInput.
-
-One of it's uses was also to remove zeros from the start of the array which stored the input values, that's essential to avoid issues with decKonwerter.
-
-* Technical info
-  - It creates another array of integers and transcribes the input array to it while removing zeros, if there are any
-  - it returns the new array formed array with transformed ASCII values.
-
-<br>
-
----
-### decKonwerter
-
-This is the one i call redundant piece of valuable information, it's a function that does the same thing basic computers are able to, so in a way it's absolutely useless like mentioned in the start of this file, which is converting numeric systems. And the reason why i consider it valuable is because it's a startpoint to many ideas.
-
-* Technical info
-  - It's flag argument is used to define what type of operation the function should do, if it's 0 then it should convert the input into decimal, else if it's 1 then it should convert the input, which will be decimal, into another system.
-  - The target system, if the flag is 0, or the input system, when the flag is 1, is represented in the sys argument.
-
-<br>
-
----
-### main function
+### Main function
 
 It doesn't need much information, it's simply a function used to start out the program and communicate with the client.
 
@@ -104,17 +63,6 @@ It doesn't need much information, it's simply a function used to start out the p
 ## ARITHMETICS
 
 Simple mathematics that doesn't need much explanation.
-
-<br>
-
----
-### arraySum
-
->```arraySum(int *array, int size)```
-
-This function only sums up the elements of an integer array in a right-to-left manner, it's used when integers are displayed as arrays like [1, 2, 3] (this is a consequence of the inefficient coding in inputReader that i'm swaping) and their sole value is needed for memory or arithmetics purposes.
-
-It works by importing both the array and it's size, it might be possible to find out the size by itself if we're using a stop signal in the array (integer arrays do not take the NULl value, so something else is needed in order to do that, like -1).
 
 <br>
 
@@ -138,7 +86,5 @@ A logarithm function under the same circumstances of the function above, it does
 
 It's used to find out the size of integers by applying the logarithm of ten, but it can also serve other purposes in other types of codes. 
 
-
-
-
+THERE ARE OTHER FUNCTIONS DISPLAYE
 
