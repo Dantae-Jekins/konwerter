@@ -1,161 +1,179 @@
-#ifndef KOWERTER
+#ifndef KONWERTER
 #define KONWERTER
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "j-tools/j_tools.h"
+#include <stdbool.h>
 
+#include "jg-tools/jg_strings.h"
+#include "scanner.h"
 
-// Function to scan stdinput
-void *scanner(char flag[], FILE *file)
+struct CHAVE
 {
-  if (str_match(flag, "-f"))
-  {
-    printf("\n Flag not yet available");
-    return NULL;
-  }
+  int key_len;
+  int use_len;
+  char *keyword;
+} key;
 
-  else if (str_match(flag, "-i"))
-  {
-    char reader;
-    int halt = 1;
-    int *output = malloc(sizeof(int));
-    *output = 0; 
 
-    while (EOF != (reader = fgetc(file)) && reader != '\n')
-    {
-      if (reader != '0' && halt != 0)
-        halt = 0; // ignore starting zeros.
+// seta a chave para o default, que é alfabética
+void init_key()
+{
+  // letras maiúsculas 65 - 90
+  // letras minúsculas 97 - 122
+  // default = '0'..'9' 'A' .. 'Z' = 35 termos
 
-      if (halt != 1)
-      {
-        if (reader >= 48 && reader <= 57)
-          reader -= 48;
+  // qual é o tamanho total da chave
+  key.key_len = 36;
+  
+  // qual é o tamanho a ser usado (hexa = 16)
+  key.use_len = 35;
 
-        *output *= 10;
-        *output += reader;
-      }
-    }
-
-    return output;
-  }
-
-  else if (str_match(flag, "-c"))
-  {
-
-    int halt = 1;
-    char *output;
-    size_t counter = 0;
-    output = malloc(sizeof(char) * 1);
-
-    while (EOF != (output[counter] = fgetc(file)) && output[counter] != '\n')
-    {
-      if (output[counter] != '0' && halt != 0)
-        halt = 0; //ignore starting zeros
-                  //strings could actually take them, but i'll make a flag
-                  //later on for this, currently it's mainly about reading hexa.
-
-      if (halt != 1)
-        output = realloc(output, sizeof(char) * ((counter += 1) + 1));
-    }
-
-    output[counter] = '\0';
-    return output;
-  }
-
-  else
-  {
-    return NULL;
-  }
+  key.keyword = malloc( sizeof(char) * key.key_len);
+  for (int i = 0; i <= 9; i++)
+      key.keyword[i] = '0' + i;
+ 
+  for (int i = 0; i <= 25; i++)
+    key.keyword[i + 10] = 'A' + i; 
 }
+
+
+// converte de uma letra para seu inteiro equivalente
+int keyword_int( char val )
+{
+  for ( int i = 0; i <= key.use_len; i++)
+  {
+    if ( key.keyword[i] == val )
+      return i;
+  }
+  
+  printf(" CARACTERE NÃO VÁLIDO SENDO USADO : %c\n", val);
+  printf(" CHAVE SENDO USADA PARA A OPERAÇÃO:\n >> ");
+  for (int i = 0; i <= key.use_len; i++) printf("%c", key.keyword[i]);
+  printf("\n TAMANHO: %d  ::  USADOS: %d \n", key.key_len, key.use_len);
+  printf("\n ::TERMINANDO PROGRAMA PARA EVITAR PROBLEMAS::\n\n");
+  exit(1);
+}
+
+
+// converte de um inteiro para seu char equivalente na tabela
+char keyword_val( int val )
+{
+  if ( val <= key.use_len)
+    return key.keyword[val];
+  
+  printf(" VALOR NÃO VÁLIDO SENDO USADO     : %d\n", val);
+  printf(" CHAVE SENDO USADA PARA A OPERAÇÃO:\n >> ");
+  for (int i = 0; i <= key.use_len; i++) printf("%c", key.keyword[i]);
+  printf("\n TAMANHO: %d  ::  USADOS: %d \n", key.key_len, key.use_len);
+  printf("\n ::TERMINANDO PROGRAMA PARA EVITAR PROBLEMAS::\n\n");
+  exit(1);
+}
+
 
 // converte a base de um número para decimal
-int to_dec(int input, int sys)
+char *to_dec(char *input, int sys)
 {
-  char *aux = ret_str(input);
-  int len   = str_len(aux) - 1;
-  int dec = 0;
-
+  key.use_len = sys;
+  
+  unsigned len  = str_len(input) - 1;
+  int *aux = malloc(sizeof(int) * len+1);
+  unsigned long dec = 0;
   // transforma em inteiros
   for (int i = 0; i <= len; i++)
-    aux[i] -= '0'; 
- 
+  {
+    aux[i] = keyword_int(input[i]);
+  }
+
   // extraimos o decimal
   for (int i = 0; i <= len; i++)
-    dec += int_podniesc(sys, i) * aux[len - i];
-  
-  return dec;
+    dec += int_pow(sys, i) * aux[len - i];
+
+  free(aux); 
+  return ret_str(dec);
 }
 
-// converte de um decimal para outro
-int to_sys(int input, int sys)
+
+// converte um decimal para outro sistema
+char *to_sys(char *input, int sys)
 {
+  key.use_len = sys;
+  
   // descobrimos o tamanho que o novo resultado venha a ter
-  int len = 0; 
-  int aux = input;
+  unsigned aux = ret_uns(input); 
+  unsigned len = 0;
+  // descobre quantas vezes venha a se transformar em inteiro
   while (aux != 0)
   {
     len ++;
     aux /= sys;
   }
 
-  // agora que sabemos o tamanho q vai ter
+  // agora que sabemos o tamanho que venha ter
   int *var = malloc(sizeof(int)*len);
+  aux = ret_uns(input);
   int i = 0;
-  while (input != 0)
+  while (aux != 0)
   {
-    var[i] = input % sys;
-    input /= sys;
+    var[i] = aux % sys;
+    aux /= sys;
     i++;
   }
 
-  // extraídos os restos basta inverter
-  // e tirar o valor inteiro da string
-  // um array não tem um ponto de parada
-  invert_array(var, len);
-  char *pre_ret = to_str(var, len);
-  
-  // por isso transformamos em uma str
-  int ret = ret_int(pre_ret);
-  free(pre_ret);
-  free(var);
+  // extraídos os restos basta inverter,
+  // transformarmos em string
+  // e aplicarmos a chave de conversão
+  inv_array(var, len); 
+  char *ret = malloc(sizeof(char)*(len+1));
+  for (i = 0; i < len; i++)
+    ret[i] = keyword_val(var[i]);
 
+  ret[i] = 0;
+
+  free(var);
   return ret;
 }
 
-// Função para mudar bases numéricas
-// altera o conteúdo de input como resultado.
-void konwerter(void *input, int insys, int outsys)
+
+// Função para mudar bases numéricas de acordo com uma chave dada
+// retorna o valor resultante 
+char *konwerter(char *input, int insys, int outsys, char flag)
 {
-  // Se não, checa se os sistemas não precisam de caracteres
-  if (insys <= 10 && insys >= 2 && outsys <= 10 && outsys >= 2)
+  // se estamos convertendo um arquivo
+  if ( flag == 'f')
   {
-    // Se sim, checa se o sys de entrada e o de saída são iguais
-    if (insys == outsys)
-      return;
 
-      int *aux = (int *) input;
-
-    // Se não, transforma a saída em decimal
-    int  dec = to_dec(*aux, insys);
-    // Se a saída for em decimal, retorna isto como string
-    if (outsys == 10)
-    {
-      *aux = dec;
-      return;
-    }
-    
-    // Se não, transforma na respectiva base
-    *aux  = to_sys(dec, outsys);
-    return;
   }
-  // Se estiver acima retorna NULL como erro.
+  
+  // se estamos convertendo um valor solitário
+  else if ( flag == 'v')
+  {
+    // se insys não é um decimal
+    char *aux;
+    if ( insys != 10 )
+    {
+      // transformamos para decimal
+      // e retornamos se for necessário
+      // apenas isto
+      aux = to_dec(input, insys); 
+      if ( outsys == 10 )
+        return aux;
+    }
+
+      // se o sistema de saída não é decimal
+      char *ret = to_sys(aux, outsys);
+      free(aux); 
+      return ret;
+  }
+
   else
   {
-    printf("\nkonwerter function - invalid arguments");
+    printf("\n konwerter: tipo %c não tratado", flag);
   }
 }
 
+
+// Função para eliminar a quebra do stdin
 void clearinput(void)
 {
   while (getchar() != '\n');
@@ -165,56 +183,15 @@ void clearinput(void)
 int main(int argc, char *argv[])
 {
   // no special commands
+  init_key();
+
   if (argc == 1)
-  {
-    int osys; // i dont like declaring in 
-    int sys;  // a single line :)
-    int input;
-
-    system("@cls||clear");
-    /*
-    printf( "\n Konwerter program"
-            "\n This program only supports "
-            "\n values within 32-bit limit "
-            "\n (2147483647).\n"
-            "\n Hexadecimal's only available"
-            "\n in special flags mode, through"
-            "\n the terminal.\n");
-
-    printf( "\n------------------------------\n"
-            "\n Select the input numeric system:  ");      
-    scanf("%d", &sys);
-    
-    printf( " Select the output numeric system: ");
-    scanf("%d", &osys);
-    
-    while(sys > 10 || sys < 2 || osys > 10 || sys < 2)
-    {
-      printf( "\n The only numeric systems available"
-              "\n without special flags are within 10"
-              "\n and 2, please select again:\n");
-      printf( "\n------------------------------\n"
-              "\n Select the input numeric system:  ");
-      scanf("%d", &sys);
-
-      printf(" Select the output numeric system: ");
-      scanf("%d", &osys);
-    }
-    */
-    sys = 2;
-    osys = 4;   
-    while(1)
-    { 
-    printf( "\n The number to konwert:\n ");
-    scanf("%d", &input);
-
-    konwerter(&input, sys, osys);
-    printf("\n retorno : %d", input);
-    }
-  }
-  else
-  {
-    printf("Testin");
+  { 
+    char *input  = input = scanner('s', stdin);
+    char *result = konwerter(input, 2, 16, 'v');
+    printf("%s", result);
+    free(input);
+    free(result); 
   }
 }
 #endif

@@ -1,5 +1,8 @@
 #ifndef J_STRINGS_H
 #define J_STRINGS_H
+
+// V.1
+
 #include<stdlib.h>
 
 // retorna o tamano de string
