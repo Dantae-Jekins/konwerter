@@ -1,14 +1,14 @@
 #ifndef CONV_H
 #define CONV_H
 
-// V.1
+// V 1.2
 
 #include "j_math.h"
 #include "j_strings.h"
 #include <stdlib.h>
 
-// transforma um array de inteiros em uma string
-char* to_str(int *array, int tam)
+// Transforma um array de inteiros em uma string. Necessário liberar memória alocada.
+char *array_str(int *array, int tam)
 {
     char *aux = (char*)malloc(sizeof(char)*(tam+1));
     for (int i = 0; i < tam; i++)
@@ -18,7 +18,7 @@ char* to_str(int *array, int tam)
     return aux;
 }
 
-// retorna uma string de um número
+// Retorna uma string de um número. Necessário liberar memória alocada.
 char *ret_str(int num)
 {
     // aloca o espaço para o número
@@ -38,7 +38,7 @@ char *ret_str(int num)
 }
 
 
-// retorna o valor correspondente unsigned de str1
+// Retorna o valor correspondente unsigned de str1.
 unsigned ret_uns(char *str1)
 {
     int len = str_len(str1);
@@ -53,7 +53,7 @@ unsigned ret_uns(char *str1)
     return ret;
 }
 
-// retorna o valor correspondente inteiro de str1
+// Retorna o valor correspondente inteiro de str1.
 int ret_int(char *str1)
 {
     int neg = 0;
@@ -74,4 +74,5 @@ int ret_int(char *str1)
         return -ret;
     return ret;
 }
+
 #endif

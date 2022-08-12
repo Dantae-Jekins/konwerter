@@ -5,193 +5,300 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#include "jg-tools/jg_strings.h"
+#include "jg-groups/jg_strings.h"
 #include "scanner.h"
+int debug_int = 0;
 
-struct CHAVE
+#define ERR(a) (printf("ERR%d :%d\n", debug_int++, a))
+
+typedef struct CHAVE
 {
-  int key_len;
-  int use_len;
+  int length;
   char *keyword;
-} key;
+} key; 
 
 
-// seta a chave para o default, que é alfabética
-void init_key()
+typedef struct ARRAY
 {
-  // letras maiúsculas 65 - 90
-  // letras minúsculas 97 - 122
-  // default = '0'..'9' 'A' .. 'Z' = 35 termos
+  int length;
+  int *nth;
+} vec;
 
-  // qual é o tamanho total da chave
-  key.key_len = 36;
+
+/// Gera um default binário
+key key_binary()
+{
+  key ret;
+  ret.length = 2;
+  ret.keyword = (char *)malloc( sizeof(char) * ret.length);
+
+  ret.keyword[0] = '0';
+  ret.keyword[1] = '1';
   
-  // qual é o tamanho a ser usado (hexa = 16)
-  key.use_len = 35;
-
-  key.keyword = malloc( sizeof(char) * key.key_len);
-  for (int i = 0; i <= 9; i++)
-      key.keyword[i] = '0' + i;
- 
-  for (int i = 0; i <= 25; i++)
-    key.keyword[i + 10] = 'A' + i; 
+  return ret;
 }
 
 
-// converte de uma letra para seu inteiro equivalente
-int keyword_int( char val )
+/// Gera um default decimal
+key key_decimal()
 {
-  for ( int i = 0; i <= key.use_len; i++)
+  key ret;
+  ret.length = 10;
+  ret.keyword = malloc(sizeof(char) * ret.length);
+
+  for(int i = '0', j = 0; i <= '9'; i++, j++)
   {
-    if ( key.keyword[i] == val )
-      return i;
+    ret.keyword[j] = i;
   }
   
-  printf(" CARACTERE NÃO VÁLIDO SENDO USADO : %c\n", val);
-  printf(" CHAVE SENDO USADA PARA A OPERAÇÃO:\n >> ");
-  for (int i = 0; i <= key.use_len; i++) printf("%c", key.keyword[i]);
-  printf("\n TAMANHO: %d  ::  USADOS: %d \n", key.key_len, key.use_len);
-  printf("\n ::TERMINANDO PROGRAMA PARA EVITAR PROBLEMAS::\n\n");
-  exit(1);
+  return ret;
 }
 
 
-// converte de um inteiro para seu char equivalente na tabela
-char keyword_val( int val )
+/// Gera uma nova chave específica
+key key_new(char *keywords)
 {
-  if ( val <= key.use_len)
-    return key.keyword[val];
-  
-  printf(" VALOR NÃO VÁLIDO SENDO USADO     : %d\n", val);
-  printf(" CHAVE SENDO USADA PARA A OPERAÇÃO:\n >> ");
-  for (int i = 0; i <= key.use_len; i++) printf("%c", key.keyword[i]);
-  printf("\n TAMANHO: %d  ::  USADOS: %d \n", key.key_len, key.use_len);
-  printf("\n ::TERMINANDO PROGRAMA PARA EVITAR PROBLEMAS::\n\n");
-  exit(1);
+  key ret;
+  ret.length = str_len(keywords);
+  ret.keyword = str_copy(keywords);
+  return ret; 
 }
 
 
-// converte a base de um número para decimal
-char *to_dec(char *input, int sys)
+/// Compara duas chaves
+/// retorna 0 se diferentes ou 1 se iguais
+int key_compare(key key1, key key2)
 {
-  key.use_len = sys;
-  
-  unsigned len  = str_len(input) - 1;
-  int *aux = malloc(sizeof(int) * len+1);
-  unsigned long dec = 0;
-  // transforma em inteiros
-  for (int i = 0; i <= len; i++)
+  if (key1.length == key2.length)
   {
-    aux[i] = keyword_int(input[i]);
+    for(int i = 0; i < key1.length; i++)
+    {
+      if (key1.keyword[i] != key2.keyword[i])
+        return 0;
+    }
+
+    return 1;
   }
 
-  // extraimos o decimal
-  for (int i = 0; i <= len; i++)
-    dec += int_pow(sys, i) * aux[len - i];
-
-  free(aux); 
-  return ret_str(dec);
+  return 0;
 }
 
 
-// converte um decimal para outro sistema
-char *to_sys(char *input, int sys)
+//libera a memória de uma chave
+void key_free(key target)
 {
-  key.use_len = sys;
-  
-  // descobrimos o tamanho que o novo resultado venha a ter
-  unsigned aux = ret_uns(input); 
-  unsigned len = 0;
-  // descobre quantas vezes venha a se transformar em inteiro
-  while (aux != 0)
+  if (target.keyword != NULL)
   {
-    len ++;
-    aux /= sys;
+    free(target.keyword);
   }
 
-  // agora que sabemos o tamanho que venha ter
-  int *var = malloc(sizeof(int)*len);
-  aux = ret_uns(input);
-  int i = 0;
-  while (aux != 0)
+  return;
+}
+
+
+// Recebe uma string e uma chave, e com base na chave
+// retorna um vec (vetor) de inteiros respectivos da string (na base insys.length)
+vec konwerter_decode(char *input, key insys)
+{
+  int length = str_len(input);
+  vec ret;
+  ret.length = length;
+  ret.nth = (int *)malloc(sizeof(int) * length);
+
+  for(int i = 0; i < ret.length; i++)
   {
-    var[i] = aux % sys;
-    aux /= sys;
-    i++;
+
+    // extraimos o valor equivalente da chave do caractere no index "i"
+    int index = -1;
+    for(int  j = 0; j < insys.length; j++)
+    {
+      if (input[i] == insys.keyword[j]) index = j;
+    }
+
+    // não achou o caractere do input na chave, ou seja, impossível convertermos
+    if (index == -1)
+    {
+      free(ret.nth);
+      ret.length = 0;
+      ret.nth = NULL;
+      return ret;
+    }
+
+    else
+    {
+      ret.nth[i] = index;
+    }
   }
 
-  // extraídos os restos basta inverter,
-  // transformarmos em string
-  // e aplicarmos a chave de conversão
-  inv_array(var, len); 
-  char *ret = malloc(sizeof(char)*(len+1));
-  for (i = 0; i < len; i++)
-    ret[i] = keyword_val(var[i]);
+  return ret;
+}
 
-  ret[i] = 0;
 
-  free(var);
+// Recebe um vetor de inteiros e retorna uma 
+// string com os caracteres correspondentes.
+char *konwerter_encode(vec input, key outsys)
+{ 
+  if (input.length == 0 || input.nth == NULL)
+    return NULL;
+
+  char *ret = (char *) malloc(sizeof(char) * (input.length + 1));
+  for(int i = 0; i < input.length; i++)
+  {
+    // erro 
+    if (input.nth[i] >= outsys.length)
+    {
+      free(ret);
+      return NULL;
+    }
+
+    ret[i] = outsys.keyword[input.nth[i]];
+  }
+
+  ret[input.length] = 0;
+  return ret;
+}
+
+
+// Recebe um vec de inteiros, e transforma ele
+// em um único inteiro em decimal (da BASE correspondente)
+long int konwerter_dec( vec input, int base )
+{
+  if (input.length == 0 || input.nth == 0)
+    return -1; // erro
+
+  int index = input.length - 1;
+  int basis = 1;
+  long int ret = 0;
+  do
+  {
+    ret += input.nth[index] * basis;
+    basis *= base;
+  } while(index-- != 0);
+
+  return ret;
+}
+
+
+/// Recebe um inteiro em decimal e transforma-o e
+/// retorna um vec de inteiros correspondente.
+vec konwerter_sys( long int input, int base)
+{
+  vec ret;
+  ret.length = 0;
+  int aux;
+  int index;
+
+  if (base <= 1)
+  { return ret; }
+
+
+  // acha o tamanho do vetor
+  aux = input;
+  while(aux != 0)
+  {
+    aux /= base;
+    ret.length += 1;
+  }
+  ret.nth = (int *) malloc(sizeof(int) * ret.length);
+
+  // adicionamos os elementos
+  aux = input;
+  index = ret.length -1;
+  while(aux != 0)
+  {
+    ret.nth[index] = aux % base;
+    aux /= base;
+    index --;
+  }
+
   return ret;
 }
 
 
 // Função para mudar bases numéricas de acordo com uma chave dada
-// retorna o valor resultante 
-char *konwerter(char *input, int insys, int outsys, char flag)
+// Retorna o valor na base resultante
+char *konwerter(char *input, key insys, key outsys)
 {
-  // se estamos convertendo um arquivo
-  if ( flag == 'f')
+  // checa se é redundante
+  if (key_compare(insys, outsys))
   {
-
-  }
-  
-  // se estamos convertendo um valor solitário
-  else if ( flag == 'v')
-  {
-    // se insys não é um decimal
-    char *aux;
-    if ( insys != 10 )
-    {
-      // transformamos para decimal
-      // e retornamos se for necessário
-      // apenas isto
-      aux = to_dec(input, insys); 
-      if ( outsys == 10 )
-        return aux;
-    }
-
-      // se o sistema de saída não é decimal
-      char *ret = to_sys(aux, outsys);
-      free(aux); 
-      return ret;
+      return input;
   }
 
+  // sistemas diferentes
   else
   {
-    printf("\n konwerter: tipo %c não tratado", flag);
+    // transformamos input em inteiros trabalháveis
+    vec aux_input = konwerter_decode(input, insys);
+    if (aux_input.length == 0)
+    {
+      if (aux_input.nth != NULL)
+        free(aux_input.nth);
+
+      return NULL;
+    }
+
+    // mudamos a base de insys para decimal
+    long int decimal = konwerter_dec(aux_input, insys.length);
+    if (decimal < 0)
+    {
+      if (aux_input.nth != NULL)
+        free(aux_input.nth);
+
+      return NULL;
+    }
+
+    // mudamos a base de decimal para outsys
+    vec aux_output = konwerter_sys(decimal, outsys.length);
+    if (aux_output.length == 0)
+    {
+      if (aux_input.nth != NULL)
+        free(aux_input.nth);
+      
+      if (aux_output.nth != NULL)
+        free(aux_output.nth);
+      
+      return NULL;
+    }
+    
+    char *ret = konwerter_encode(aux_output, outsys);
+    
+    free(aux_input.nth);
+    free(aux_output.nth);
+    return ret;
+
   }
+
+  return NULL;
 }
 
 
-// Função para eliminar a quebra do stdin
-void clearinput(void)
+// main
+int main()
 {
-  while (getchar() != '\n');
+
+  // test
+  key key1 = key_binary();
+  key key2 = key_decimal();
+  key key3 = key_new("01");
+
+  char *konwerted = konwerter("123454", key2, key1);
+  printf("%s", konwerted);
+  free(konwerted);
+
+  key_free(key3);
+  key_free(key1);
+  key_free(key2);
+
+
+
+  //TODO
+  // 1. estabelecer um módulo de comunicação na rede para recebimento e criptografia/descriptografia de dados
+  // 2. estabelecer um módulo para leitura de arquivos e criptografia dos mesmos:w
+  
+
+
+  return 0;
 }
 
-
-int main(int argc, char *argv[])
-{
-  // no special commands
-  init_key();
-
-  if (argc == 1)
-  { 
-    char *input  = input = scanner('s', stdin);
-    char *result = konwerter(input, 2, 16, 'v');
-    printf("%s", result);
-    free(input);
-    free(result); 
-  }
-}
 #endif

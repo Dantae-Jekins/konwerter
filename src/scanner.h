@@ -1,63 +1,74 @@
-// Function to scan stdinput
-void *scanner(char flag, FILE *file)
+#include <stdio.h>
+#include "jg-groups/jg_strings.h"
+
+// estrutura para guardar os argumentos 
+typedef struct opt
 {
-  if (flag == 'f')
-  {
-    printf("\n Flag not yet available");
-    return NULL;
-  }
+    int len;
+    char **args;
+} opt;
 
-  else if (flag == 'i')
-  {
-    char reader;
-    int halt = 1;
-    int *output = malloc(sizeof(int));
-    *output = 0; 
 
-    while (EOF != (reader = fgetc(file)) && reader != '\n')
-    {
-      if (reader != '0' && halt != 0)
-        halt = 0; // ignore starting zeros.
+// leitor do terminal para armazenar requisições
+opt opt_scanner()
+{
+  char *output;
+  
+  { // leitura do terminal
+    int counter = 0;
+    int size = 10;
+    bool space = 1;
 
-      if (halt != 1)
-      {
-        if (reader >= 48 && reader <= 57)
-          reader -= 48;
+    // aloca 10 espaços iniciais
+    output = (char *) malloc(sizeof(char) * size);
+    
+    // lê o primeiro caractere (não pode ser espaço)
+ 
+    // então lê até a quebra de linha 
+    char input;
+    while (EOF != (input = fgetc(stdin)) && input != '\n')
+    {    
+        // se existe um espaço final
+        if ( space == 1)
+        {
+          // para que input seja lido, não pode ser um espaço também
+          if (input != ' ')
+          {
+            output[counter] = input;
+            space = 0;
+            counter ++;
+          }
+        }
 
-        *output *= 10;
-        *output += reader;
-      }
+        else if (space == 0)
+        {
+          output[counter] = input;
+          if (input == ' ')
+            space = 1;
+          
+          counter++;
+        } 
+
+        // a cada 10 caracteres, alocamos + 10 de espaço
+        if (counter == size)
+        {
+          size += 10;
+          output = (char *) realloc(output, sizeof(char) * size);
+        }
     }
 
-    return output;
-  }
-
-  else if (flag == 's')
-  {
-
-    int halt = 1;
-    char *output;
-    size_t counter = 0;
-    output = malloc(sizeof(char) * 1);
-
-    while (EOF != (output[counter] = fgetc(file)) && output[counter] != '\n')
-    {
-      if (output[counter] != '0' && halt != 0)
-        halt = 0; //ignore starting zeros
-                  //strings could actually take them, but i'll make a flag
-                  //later on for this, currently it's mainly about reading hexa.
-
-      if (halt != 1)
-        output = realloc(output, sizeof(char) * ((counter += 1) + 1));
-    }
-
+    // arruma o tamanho certinho
+    output = (char *) realloc(output, sizeof(char) * counter + 1);
     output[counter] = '\0';
-    return output;
   }
 
-  else
-  {
-    return NULL;
-  }
+  // transformação da string em opt / args
+  opt ret;
+  
+  ret.len = 0;
+  ret.args = str_split(output, ' ');
+  for (ret.len = 0; ret.args[ret.len] != NULL; ret.len++);  
+  
+  free(output);
+  return ret;
 }
-

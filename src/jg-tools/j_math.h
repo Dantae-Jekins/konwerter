@@ -1,11 +1,12 @@
 #ifndef J_MATH_H
 #define J_MATH_H
 
-// V.1
+// V 1.1
 
 #include <math.h>
 
-// potênciação
+
+// Extrai um número elevado à uma base
 int int_pow(int num1, int base)
 {
     int aux = num1;
@@ -24,12 +25,15 @@ int int_pow(int num1, int base)
     return aux;
 }
 
-// função rápida
+
+// Extrai o quadrado de um número
 int int_sqr(int num1)
 {
   return num1*num1;
 }
 
+
+// Extrai o fatorial de um número
 int int_fat(int num1)
 {
   int i = num1;
@@ -40,6 +44,9 @@ int int_fat(int num1)
 
   return num1; 
 }
+
+
+// Extrai o logaritmo como inteiro
 int int_log(int num1, int base)
 {
   int i;
@@ -49,7 +56,8 @@ int int_log(int num1, int base)
   return i;
 }
 
-// diferença entre 2 pontos
+
+// Diferença entre 2 pontos
 int int_mod(int num1, int num2)
 {
   if (num2 > num1)

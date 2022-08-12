@@ -10,7 +10,7 @@
     int str_len(char *string);
     char *str_copy(char *array);
     char *str_crop(unsigned int start, unsigned int end, char *str1);
-    void str_mov(unsigned int i, char *str1, char *str2);
+    void str_mov(int i, char *str1, char *str2);
     int str_match(char *str1, char *str2);
 
     //j_arrays.h
@@ -31,8 +31,8 @@
     int int_log(int num1, int base);
     int int_mod(int num1, int num2);
 
-    #include "j_strings.h"
-    #include "j_arrays.h"
-    #include "j_transform.h"
-    #include "j_math.h"
+    #include "../jg-tools/j_strings.h"
+    #include "../jg-tools/j_arrays.h"
+    #include "../jg-tools/j_transform.h"
+    #include "../jg-tools/j_math.h"
 #endif 
