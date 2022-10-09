@@ -35,4 +35,5 @@
     #include "../jg-tools/j_arrays.h"
     #include "../jg-tools/j_transform.h"
     #include "../jg-tools/j_math.h"
+    #include "../jg-tools/j_stringList.h"
 #endif 

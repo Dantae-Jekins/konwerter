@@ -4,12 +4,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <dirent.h>
 #include "jg-groups/jg_strings.h"
-#include "scanner.h"
+
+
 int debug_int = 0;
 
-#define ERR(a) (printf("ERR%d :%d\n", debug_int++, a))
 
 typedef struct CHAVE
 {
@@ -274,10 +276,9 @@ char *konwerter(char *input, key insys, key outsys)
 
 
 // main
-int main()
-{
-
-  // test
+int main(int argc, char **argv)
+{ 
+  /* test exemplo do uso da chave
   key key1 = key_binary();
   key key2 = key_decimal();
   key key3 = key_new("01");
@@ -289,15 +290,58 @@ int main()
   key_free(key3);
   key_free(key1);
   key_free(key2);
+  */
 
-
+  //TODO TESTES DE REDE
 
   //TODO
   // 1. estabelecer um módulo de comunicação na rede para recebimento e criptografia/descriptografia de dados
   // 2. estabelecer um módulo para leitura de arquivos e criptografia dos mesmos:w
-  
 
+  // TODO FLAGS
+  if (argc > 1)
+  { 
+    // estruturas para uso dos programas,
+    // preparadas de acordo com as flags
+    list files = list_new();
+    
+    // loop de leitura de flags
+    int counter = 0;
+    while (counter < argc)
+    {
 
+      // -f file(s)
+      if( str_match("-f", argv[counter]))
+      {
+        // movimenta o contador
+        counter++;
+        for(; counter < argc; counter++)
+        {
+          // checa se é o final ou se é outra flag
+          if (argv[counter] == NULL || argv[counter][0] == '-')
+            break;
+
+          else
+          {
+            list_addFirst(&files, item_new(argv[counter]));
+          }
+
+          //TODO checar se arquivos existem
+          //DIR *dir;
+          //dir = opendir("./");
+
+          //permitir que diretórios sejam selecionados
+        }  
+      } // -f file end
+
+      counter ++;
+    } //while end
+    
+    char *resultado = list_toString(files);
+    printf("\n%s\n", resultado);
+    free(resultado);    
+  }
+   
   return 0;
 }
 
