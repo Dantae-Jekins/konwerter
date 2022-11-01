@@ -304,7 +304,9 @@ int main(int argc, char **argv)
     // estruturas para uso dos programas,
     // preparadas de acordo com as flags
     list files = list_new();
-    
+    DIR *dir = NULL;
+    struct dirent *entry;
+
     // loop de leitura de flags
     int counter = 0;
     while (counter < argc)
@@ -313,6 +315,13 @@ int main(int argc, char **argv)
       // -f file(s)
       if( str_match("-f", argv[counter]))
       {
+        // primeiramente coletamos os arquivos do diretório
+        dir = opendir("./");
+        if (dir == NULL) goto memlib; // falha
+        // TODO checar se os arquivos listados estão
+        // dentro dos coletados, ou vice versa.
+        entry = readdir(dir); // arquivos coletados
+        
         // movimenta o contador
         counter++;
         for(; counter < argc; counter++)
@@ -325,22 +334,18 @@ int main(int argc, char **argv)
           {
             list_addFirst(&files, item_new(argv[counter]));
           }
-
-          //TODO checar se arquivos existem
-          //DIR *dir;
-          //dir = opendir("./");
-
-          //permitir que diretórios sejam selecionados
-        }  
+      
+        } // for end 
+      
       } // -f file end
 
       counter ++;
     } //while end
-    
-    char *resultado = list_toString(files);
-    printf("\n%s\n", resultado);
-    free(resultado);    
-  }
+
+memlib:
+    list_Free(&files);
+    closedir(dir);
+  } //if argc end
    
   return 0;
 }

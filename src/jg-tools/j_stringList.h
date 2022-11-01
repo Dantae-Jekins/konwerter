@@ -33,6 +33,8 @@ typedef struct
     int len;
 } list;
 
+// valor para realizar extrações da lista
+snode __j_ptrItem = NULL;
 
 // -------------------------------------------------------------- //
 // FUNÇÕES SUJEITAS A MUDANÇA, NECESSÁRIO ADAPTAR DE PROJETO PARA PROJETO
@@ -310,6 +312,20 @@ int list_Count( list target )
   return count;
 }
 
+// Inicia o ponteiro para extração dos itens
+snode list_Get( list target )
+{
+  __j_ptrItem = target.ini;
+  return __j_ptrItem;
+}
+
+// Extrai o próximo elemento da lista
+snode list_Next()
+{
+  if(__j_ptrItem == NULL) return NULL;
+  __j_ptrItem = __j_ptrItem->next;
+  return __j_ptrItem;
+}
 
 // Limpa a lista liberando toda sua memória
 void list_Free( list *target)
