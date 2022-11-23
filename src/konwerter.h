@@ -1,29 +1,30 @@
 #ifndef KONWERTER
 #define KONWERTER
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <dirent.h>
+#include<stdlib.h>
+#include<stdio.h>
 #include "jg-groups/jg_strings.h"
 
+///!! VALORES MÁXIMOS PARA INTEIROS = 1.84e+19
+///!! USO DE 64 BITS DE MEMÓRIA 
+///
+/// TODO em caso de criptografia de dados estruturados
+/// (pacotes, arquivos), a estratégia é concatenar os bytes
+/// (1 char = 1 byte = 8 bits) para o cálculo do konwerter, ou seja,
+/// realizar os cálculos 
 
-int debug_int = 0;
-
-
+// chave de criptografia
 typedef struct CHAVE
 {
-  int length;
+  u_int length;
   char *keyword;
 } key; 
 
 
+// array simples 
 typedef struct ARRAY
 {
-  int length;
-  int *nth;
+  u_int length;
+  u_int *nth;
 } vec;
 
 
@@ -73,7 +74,7 @@ int key_compare(key key1, key key2)
 {
   if (key1.length == key2.length)
   {
-    for(int i = 0; i < key1.length; i++)
+    for(u_int i = 0; i < key1.length; i++)
     {
       if (key1.keyword[i] != key2.keyword[i])
         return 0;
@@ -105,14 +106,14 @@ vec konwerter_decode(char *input, key insys)
   int length = str_len(input);
   vec ret;
   ret.length = length;
-  ret.nth = (int *)malloc(sizeof(int) * length);
+  ret.nth = (u_int *)malloc(sizeof(u_int) * length);
 
-  for(int i = 0; i < ret.length; i++)
+  for(u_int i = 0; i < ret.length; i++)
   {
 
     // extraimos o valor equivalente da chave do caractere no index "i"
     int index = -1;
-    for(int  j = 0; j < insys.length; j++)
+    for(u_int  j = 0; j < insys.length; j++)
     {
       if (input[i] == insys.keyword[j]) index = j;
     }
@@ -144,7 +145,7 @@ char *konwerter_encode(vec input, key outsys)
     return NULL;
 
   char *ret = (char *) malloc(sizeof(char) * (input.length + 1));
-  for(int i = 0; i < input.length; i++)
+  for(u_int i = 0; i < input.length; i++)
   {
     // erro 
     if (input.nth[i] >= outsys.length)
@@ -169,8 +170,8 @@ long int konwerter_dec( vec input, int base )
     return -1; // erro
 
   int index = input.length - 1;
-  int basis = 1;
-  long int ret = 0;
+  u_int64_t basis = 1;
+  u_int64_t ret = 0;
   do
   {
     ret += input.nth[index] * basis;
@@ -183,11 +184,11 @@ long int konwerter_dec( vec input, int base )
 
 /// Recebe um inteiro em decimal e transforma-o e
 /// retorna um vec de inteiros correspondente.
-vec konwerter_sys( long int input, int base)
+vec konwerter_sys( u_int64_t input, int base)
 {
   vec ret;
   ret.length = 0;
-  int aux;
+  u_int64_t aux;
   int index;
 
   if (base <= 1)
@@ -201,7 +202,7 @@ vec konwerter_sys( long int input, int base)
     aux /= base;
     ret.length += 1;
   }
-  ret.nth = (int *) malloc(sizeof(int) * ret.length);
+  ret.nth = (u_int *) malloc(sizeof(u_int) * ret.length);
 
   // adicionamos os elementos
   aux = input;
@@ -241,7 +242,7 @@ char *konwerter(char *input, key insys, key outsys)
     }
 
     // mudamos a base de insys para decimal
-    long int decimal = konwerter_dec(aux_input, insys.length);
+    u_int64_t decimal = konwerter_dec(aux_input, insys.length);
     if (decimal < 0)
     {
       if (aux_input.nth != NULL)
@@ -274,80 +275,22 @@ char *konwerter(char *input, key insys, key outsys)
   return NULL;
 }
 
-
-// main
+/*
 int main(int argc, char **argv)
-{ 
-  /* test exemplo do uso da chave
+{
   key key1 = key_binary();
   key key2 = key_decimal();
   key key3 = key_new("01");
-
-  char *konwerted = konwerter("123454", key2, key1);
+  key key4 = key_new("0123456789ABCDEF");
+  if (argc <= 1) return 0;
+  char *konwerted = konwerter(argv[1], key2, key1);
   printf("%s", konwerted);
   free(konwerted);
 
   key_free(key3);
   key_free(key1);
   key_free(key2);
-  */
-
-  //TODO TESTES DE REDE
-
-  //TODO
-  // 1. estabelecer um módulo de comunicação na rede para recebimento e criptografia/descriptografia de dados
-  // 2. estabelecer um módulo para leitura de arquivos e criptografia dos mesmos:w
-
-  // TODO FLAGS
-  if (argc > 1)
-  { 
-    // estruturas para uso dos programas,
-    // preparadas de acordo com as flags
-    list files = list_new();
-    DIR *dir = NULL;
-    struct dirent *entry;
-
-    // loop de leitura de flags
-    int counter = 0;
-    while (counter < argc)
-    {
-
-      // -f file(s)
-      if( str_match("-f", argv[counter]))
-      {
-        // primeiramente coletamos os arquivos do diretório
-        dir = opendir("./");
-        if (dir == NULL) goto memlib; // falha
-        // TODO checar se os arquivos listados estão
-        // dentro dos coletados, ou vice versa.
-        entry = readdir(dir); // arquivos coletados
-        
-        // movimenta o contador
-        counter++;
-        for(; counter < argc; counter++)
-        {
-          // checa se é o final ou se é outra flag
-          if (argv[counter] == NULL || argv[counter][0] == '-')
-            break;
-
-          else
-          {
-            list_addFirst(&files, item_new(argv[counter]));
-          }
-      
-        } // for end 
-      
-      } // -f file end
-
-      counter ++;
-    } //while end
-
-memlib:
-    list_Free(&files);
-    closedir(dir);
-  } //if argc end
-   
-  return 0;
-}
+  key_free(key4);
+}*/
 
 #endif

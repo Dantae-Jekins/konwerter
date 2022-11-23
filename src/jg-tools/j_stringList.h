@@ -256,6 +256,7 @@ void list_nodeRemove(list *target, snode node)
     target->end = parent;
 
   target->len -= 1;
+  free(node->item.text);
   free(node);
 }
 
