@@ -15,22 +15,75 @@ int main(int argc, char **argv)
   //TODO
   // 1. estabelecer um módulo de comunicação na rede para recebimento e criptografia/descriptografia de dados
   // 2. estabelecer um módulo para leitura de arquivos e criptografia dos mesmos:w
+  // mas antes destes, leitura de chaves e sua aplicação.
 
   // TODO FLAGS
   if (argc > 1)
-  { 
+  {
     // estruturas para uso dos programas,
     // preparadas de acordo com as flags
     list files = list_new();
     DIR *dir = NULL;
     struct dirent *entry;
+    key key_input = key_empty();
+    key key_output = key_empty();
 
     // loop de leitura de flags
     int counter = 0;
     while (counter < argc)
     {
+      
+      // -ki [input key]
+      /// Altera a chave criptográfica de entrada
+      if ( str_match("-ki", argv[counter]))
+      {
+        counter++;
+        if (counter < argc)
+        {
+          if (key_input.length != 0 )
+            key_free(key_input);
 
+          key_input = key_new(argv[counter]);
+          printf("\n Chave cadastrada: ");
+          for(u_int i = 0; i < key_input.length; i++)
+            printf("%c", key_input.keyword[i]);
+        }
+
+        else {
+          printf("\n Chave de entrada inválida, abortando flag");
+        }
+
+        continue;
+      } // -ki [key] end
+
+
+      // -ko [output key
+      /// Altera a chave criptográfica de saída
+      if ( str_match("-ko", argv[counter]))
+      {
+        counter++;
+        if (counter < argc)
+        {
+          if (key_output.length != 0)
+            key_free(key_output);
+
+          key_output = key_new(argv[counter]);
+          printf("\n Chave cadastrada: ");
+          for(u_int i = 0; i < key_output.length; i++)
+            printf("%c", key_output.keyword[i]);
+        }
+
+        else {
+          printf("\n Chave de saída inválida, abortando flag");
+        }
+
+        continue;
+      } // -ko [key end
+
+      
       // -f [files]
+      /// recebe arquivos, verifica sua existência e armazena 
+      /// os registros em uma lista (sem feature para diretórios)
       if( str_match("-f", argv[counter]))
       {
         dir = opendir("./");
@@ -68,14 +121,23 @@ int main(int argc, char **argv)
             }
           }
         } 
+        continue;
       } // -f [files] end
-
       counter ++;
     } //while end
 
 memlib:
-    list_Free(&files);
-    closedir(dir);
+    if (files.len != 0)
+      list_Free(&files);
+
+    if (dir != NULL)
+      closedir(dir);
+
+    if (key_input.length != 0)
+      key_free(key_input);
+
+    if (key_output.length != 0)
+      key_free(key_output);
   } //if argc end
    
   return 0;

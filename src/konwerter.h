@@ -67,6 +67,14 @@ key key_new(char *keywords)
   return ret; 
 }
 
+/// Gera uma nova chave vazia
+key key_empty()
+{
+  key ret;
+  ret.length = 0;
+  ret.keyword = NULL;
+  return ret;
+}
 
 /// Compara duas chaves
 /// retorna 0 se diferentes ou 1 se iguais
