@@ -25,8 +25,10 @@ int main(int argc, char **argv)
     list files = list_new();
     DIR *dir = NULL;
     struct dirent *entry;
-    key key_input = key_empty();
-    key key_output = key_empty();
+    key key_input = key_ascii();
+    key key_output = key_ascii();
+    bool keyi_alter = false;
+    bool keyo_alter = false;
 
     // loop de leitura de flags
     int counter = 0;
@@ -45,21 +47,22 @@ int main(int argc, char **argv)
 
           key_input = key_new(argv[counter]);
           printf("\n Chave cadastrada: ");
-          for(u_int i = 0; i < key_input.length; i++)
+          for(int i = 0; i < key_input.length; i++)
             printf("%c", key_input.keyword[i]);
+
+          keyi_alter = true;
         }
 
         else {
           printf("\n Chave de entrada inválida, abortando flag");
         }
 
-        continue;
       } // -ki [key] end
 
 
-      // -ko [output key
+      // -ko [output key]
       /// Altera a chave criptográfica de saída
-      if ( str_match("-ko", argv[counter]))
+      else if ( str_match("-ko", argv[counter]))
       {
         counter++;
         if (counter < argc)
@@ -69,22 +72,23 @@ int main(int argc, char **argv)
 
           key_output = key_new(argv[counter]);
           printf("\n Chave cadastrada: ");
-          for(u_int i = 0; i < key_output.length; i++)
+          for(int i = 0; i < key_output.length; i++)
             printf("%c", key_output.keyword[i]);
+
+          keyo_alter = true;
         }
 
         else {
           printf("\n Chave de saída inválida, abortando flag");
         }
 
-        continue;
       } // -ko [key end
 
       
       // -f [files]
       /// recebe arquivos, verifica sua existência e armazena 
       /// os registros em uma lista (sem feature para diretórios)
-      if( str_match("-f", argv[counter]))
+      else if( str_match("-f", argv[counter]))
       {
         dir = opendir("./");
         if (dir == NULL) goto memlib; 
@@ -94,7 +98,10 @@ int main(int argc, char **argv)
         {
           // checa se é o final ou se é outra flag
           if (argv[counter] == NULL || argv[counter][0] == '-')
+          {
+            counter--;
             break;
+          }
 
           else
           {
@@ -102,6 +109,8 @@ int main(int argc, char **argv)
           }
         }
         
+
+        // TODO MOVER ISSO PARA FORA DO ARGC.
         while((entry = readdir(dir)) != NULL) // while entries
         {
           // exclui diretórios (por enquanto)
@@ -109,22 +118,44 @@ int main(int argc, char **argv)
           {
             // percorre a lista para cada entry
             snode node = list_Get(files);
+
+            if (keyi_alter) printf("\n Chave de entrada inalterada");
+            if (keyo_alter) printf("\n Chave de saída inalterada");
+
             while (node != NULL) // while nodes
             {
               // Arquivo existe
               if (str_match(entry->d_name, node->item.text))
               {
                 printf("\n Criptografando arquivo : %s", entry->d_name);
+                FILE *ptr = fopen(node->item.text, "r");
+                if (ptr == NULL)
+                  printf("\n Erro ao ler o arquivo");
+                else
+                {
+                  int i = 0;
+                  char buffer[8]; //8 bytes máximo
+                  for (char ch = fgetc(ptr); ch != EOF; i++)
+                  {
+                    //TODO ler o arquivo e criptografar os dados nos 8 bytes
+                  }
+                }
+
+                fclose(ptr);
               }
               node = list_Next();
               
             }
           }
         } 
-        continue;
       } // -f [files] end
+      
       counter ++;
     } //while end
+
+    // flags coletadas
+    // se existem arquivos para serem tratados
+
 
 memlib:
     if (files.len != 0)

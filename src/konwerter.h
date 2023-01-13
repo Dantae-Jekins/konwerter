@@ -47,7 +47,7 @@ key key_decimal()
 {
   key ret;
   ret.length = 10;
-  ret.keyword = malloc(sizeof(char) * ret.length);
+  ret.keyword = (char *) malloc(sizeof(char) * ret.length);
 
   for(int i = '0', j = 0; i <= '9'; i++, j++)
   {
@@ -73,6 +73,19 @@ key key_empty()
   key ret;
   ret.length = 0;
   ret.keyword = NULL;
+  return ret;
+}
+
+/// Gera uma nova chave com carácteres ASCII
+key key_ascii()
+{
+  key ret;
+  ret.length = 256;
+  ret.keyword = (char *) malloc(sizeof(char) * ret.length);
+  // me parece que tem outra maneira de fazer isso
+  for (u_int i = 0; i < ret.length; i++)
+    ret.keyword[i] = i;
+
   return ret;
 }
 
